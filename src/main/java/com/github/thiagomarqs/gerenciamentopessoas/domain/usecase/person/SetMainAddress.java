@@ -3,8 +3,9 @@ package com.github.thiagomarqs.gerenciamentopessoas.domain.usecase.person;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.entity.Address;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.entity.Person;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.exception.BusinessRuleException;
-import com.github.thiagomarqs.gerenciamentopessoas.domain.exception.BusinessRuleMessages;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.exception.EntityNotFoundException;
+import com.github.thiagomarqs.gerenciamentopessoas.domain.exception.messages.AddressBusinessRuleMessages;
+import com.github.thiagomarqs.gerenciamentopessoas.domain.exception.messages.PersonBusinessRuleMessages;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.repository.AddressRepository;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.repository.PersonRepository;
 import jakarta.inject.Inject;
@@ -40,13 +41,13 @@ public class SetMainAddress {
 
     private void throwIfInactivePerson(Person person) {
         if(!person.isActive()) {
-            throw new BusinessRuleException(String.format(BusinessRuleMessages.PERSON_IS_INACTIVE_FORMATTED, person.getId()));
+            throw new BusinessRuleException(String.format(PersonBusinessRuleMessages.PERSON_IS_INACTIVE_FORMATTED, person.getId()));
         }
     }
 
     private void throwIfInactiveAddress(Address address) {
         if(!address.isActive()) {
-            throw new BusinessRuleException(String.format(BusinessRuleMessages.ADDRESS_IS_INACTIVE_FORMATTED, address.getAddress()));
+            throw new BusinessRuleException(String.format(AddressBusinessRuleMessages.ADDRESS_IS_INACTIVE_FORMATTED, address.getAddress()));
         }
     }
 
@@ -54,7 +55,7 @@ public class SetMainAddress {
         boolean isSomeoneElsesAddress = address.getPerson() != null && !address.getPerson().equals(person);
 
         if(isSomeoneElsesAddress) {
-            throw new BusinessRuleException(BusinessRuleMessages.ADDRESS_BELONGS_TO_ANOTHER_USER);
+            throw new BusinessRuleException(AddressBusinessRuleMessages.ADDRESS_BELONGS_TO_ANOTHER_USER);
         }
     }
 

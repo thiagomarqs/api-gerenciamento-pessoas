@@ -3,7 +3,7 @@ package com.github.thiagomarqs.gerenciamentopessoas.domain.usecase.person;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.entity.Address;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.entity.Person;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.exception.BusinessRuleException;
-import com.github.thiagomarqs.gerenciamentopessoas.domain.exception.BusinessRuleMessages;
+import com.github.thiagomarqs.gerenciamentopessoas.domain.exception.messages.AddressBusinessRuleMessages;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.repository.PersonRepository;
 import jakarta.inject.Inject;
 import org.springframework.stereotype.Component;
@@ -24,7 +24,7 @@ public class CreatePerson {
         var hasMoreThanOneAddress = person.getAddresses().size() > 1;
 
         if (mainAddress == null && hasMoreThanOneAddress) {
-            throw new BusinessRuleException(BusinessRuleMessages.CANT_SET_MAIN_ADDRESS_WHEN_MORE_THAN_ONE_ADDRESS);
+            throw new BusinessRuleException(AddressBusinessRuleMessages.CANT_SET_MAIN_ADDRESS_WHEN_MORE_THAN_ONE_ADDRESS);
         }
 
         Address firstAddress = person.getAddresses().getFirst();

@@ -3,7 +3,8 @@ package com.github.thiagomarqs.gerenciamentopessoas.domain.usecase.address;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.entity.Address;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.entity.Person;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.exception.BusinessRuleException;
-import com.github.thiagomarqs.gerenciamentopessoas.domain.exception.BusinessRuleMessages;
+import com.github.thiagomarqs.gerenciamentopessoas.domain.exception.messages.AddressBusinessRuleMessages;
+import com.github.thiagomarqs.gerenciamentopessoas.domain.exception.messages.PersonBusinessRuleMessages;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.repository.AddressRepository;
 import jakarta.inject.Inject;
 import jakarta.validation.constraints.NotNull;
@@ -60,24 +61,26 @@ public class EditAddress {
     }
 
     private void throwIfInvalid(Long addressId, Address edited, Person person) {
-        boolean hasOnlyOneAddress = person.getAddresses().size() == 1;
-        boolean hasMoreThanTwoAddresses = person.getAddresses().size() > 2;
         boolean isTryingToDeactivateAddress = !edited.isActive();
         boolean isMainAddress = person.getMainAddress().getId().equals(addressId);
+        int addressCount = person.getAddresses().size();
         boolean areAllOtherAddressesDeactivated = person.getAddresses()
                 .stream()
-                .allMatch(a -> !a.getId().equals(addressId) && !a.isActive());
+                .filter(a -> !a.getId().equals(addressId))
+                .noneMatch(Address::isActive);
 
-        if(isTryingToDeactivateAddress && isMainAddress && hasMoreThanTwoAddresses) {
-            throw new BusinessRuleException(BusinessRuleMessages.CANT_DEACTIVATE_ADDRESS_WHEN_MORE_THAN_TWO_ADDRESSES_FORMATTED);
-        }
+        if(isTryingToDeactivateAddress) {
+            if(isMainAddress && addressCount > 2) {
+                throw new BusinessRuleException(AddressBusinessRuleMessages.CANT_DEACTIVATE_ADDRESS_WHEN_MORE_THAN_TWO_ADDRESSES_FORMATTED);
+            }
 
-        if(isTryingToDeactivateAddress && hasOnlyOneAddress) {
-            throw new BusinessRuleException(BusinessRuleMessages.PERSON_HAS_ONLY_ONE_ADDRESS);
-        }
+            if(addressCount == 1) {
+                throw new BusinessRuleException(PersonBusinessRuleMessages.PERSON_HAS_ONLY_ONE_ADDRESS);
+            }
 
-        if(isTryingToDeactivateAddress && areAllOtherAddressesDeactivated) {
-            throw new BusinessRuleException(BusinessRuleMessages.ONLY_ACTIVE_ADDRESS_FORMATTED);
+            if(areAllOtherAddressesDeactivated) {
+                throw new BusinessRuleException(AddressBusinessRuleMessages.ONLY_ACTIVE_ADDRESS_FORMATTED);
+            }
         }
     }
 }

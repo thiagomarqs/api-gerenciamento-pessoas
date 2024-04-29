@@ -3,7 +3,7 @@ package com.github.thiagomarqs.gerenciamentopessoas.domain.usecase.person;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.entity.Address;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.entity.Person;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.exception.BusinessRuleException;
-import com.github.thiagomarqs.gerenciamentopessoas.domain.exception.BusinessRuleMessages;
+import com.github.thiagomarqs.gerenciamentopessoas.domain.exception.messages.AddressBusinessRuleMessages;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.repository.PersonRepository;
 import jakarta.inject.Inject;
 import org.springframework.stereotype.Component;
@@ -42,7 +42,7 @@ public class AddAddress {
         );
 
         if(isDuplicate) {
-            throw new BusinessRuleException(BusinessRuleMessages.DUPLICATED_ADDRESS);
+            throw new BusinessRuleException(AddressBusinessRuleMessages.DUPLICATED_ADDRESS);
         }
     }
 
