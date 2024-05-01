@@ -43,7 +43,7 @@ public class FindPeople {
     }
 
     Iterable<Person> findAllByAddressCity(@NotBlank String city) {
-        return personRepository.findAllByAddressCity(city);
+        return personRepository.findAllByAddresses_City(city);
     }
 
 }

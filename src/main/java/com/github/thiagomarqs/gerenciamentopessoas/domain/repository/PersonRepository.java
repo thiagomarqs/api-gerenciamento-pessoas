@@ -13,5 +13,5 @@ public interface PersonRepository extends CrudRepository<Person, Long> {
 
     Iterable<Person> findAllByFullNameContaining(String fullName);
 
-    Iterable<Person> findAllByAddressCity(String city);
+    Iterable<Person> findAllByAddresses_City(String city);
 }

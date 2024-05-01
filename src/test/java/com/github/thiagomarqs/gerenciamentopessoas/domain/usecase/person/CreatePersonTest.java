@@ -2,6 +2,7 @@ package com.github.thiagomarqs.gerenciamentopessoas.domain.usecase.person;
 
 import com.github.thiagomarqs.gerenciamentopessoas.domain.entity.Address;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.entity.Person;
+import com.github.thiagomarqs.gerenciamentopessoas.domain.exception.BusinessRuleException;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.repository.PersonRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -75,7 +76,7 @@ class CreatePersonTest {
                 .address(address2)
                 .build();
 
-        assertThrows(RuntimeException.class, () -> createPerson.create(person));
+        assertThrows(BusinessRuleException.class, () -> createPerson.create(person));
 
     }
 
@@ -113,7 +114,7 @@ class CreatePersonTest {
                 .birthDate(LocalDate.of(1990, 1, 1))
                 .build();
 
-        assertThrows(RuntimeException.class, () -> createPerson.create(person));
+        assertThrows(BusinessRuleException.class, () -> createPerson.create(person));
 
     }
 }

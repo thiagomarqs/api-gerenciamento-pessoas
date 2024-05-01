@@ -1,18 +1,18 @@
 package com.github.thiagomarqs.gerenciamentopessoas.domain.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 @Entity
-public class Person {
+public class Person implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,9 +27,10 @@ public class Person {
     private LocalDate birthDate;
 
     @NotEmpty
+    @OneToMany(mappedBy = "person", cascade = CascadeType.ALL)
     private List<Address> addresses = new ArrayList<>();
 
-    @NotNull
+    @OneToOne(optional = false, cascade = CascadeType.ALL)
     private Address mainAddress;
 
     @NotNull

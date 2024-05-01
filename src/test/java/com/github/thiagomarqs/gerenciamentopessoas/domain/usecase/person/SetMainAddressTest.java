@@ -2,6 +2,8 @@ package com.github.thiagomarqs.gerenciamentopessoas.domain.usecase.person;
 
 import com.github.thiagomarqs.gerenciamentopessoas.domain.entity.Address;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.entity.Person;
+import com.github.thiagomarqs.gerenciamentopessoas.domain.exception.BusinessRuleException;
+import com.github.thiagomarqs.gerenciamentopessoas.domain.exception.EntityNotFoundException;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.repository.AddressRepository;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.repository.PersonRepository;
 import org.junit.jupiter.api.Test;
@@ -124,7 +126,7 @@ class SetMainAddressTest {
         assertTrue(person.getAddresses().contains(newMainAddress));
         assertFalse(newMainAddress.isActive());
 
-        assertThrows(RuntimeException.class, () -> setMainAddress.set(personId, newMainAddressId));
+        assertThrows(BusinessRuleException.class, () -> setMainAddress.set(personId, newMainAddressId));
     }
 
     @Test
@@ -177,7 +179,7 @@ class SetMainAddressTest {
         assertTrue(person.getAddresses().contains(oldMainAddress));
         assertEquals(person.getMainAddress(), oldMainAddress);
 
-        assertThrows(RuntimeException.class, () -> setMainAddress.set(personId, someoneElsesAddressId));
+        assertThrows(BusinessRuleException.class, () -> setMainAddress.set(personId, someoneElsesAddressId));
     }
 
     @Test
@@ -222,7 +224,7 @@ class SetMainAddressTest {
         assertTrue(person.getAddresses().contains(newMainAddress));
         assertFalse(person.isActive());
 
-        assertThrows(RuntimeException.class, () -> setMainAddress.set(personId, newMainAddressId));
+        assertThrows(BusinessRuleException.class, () -> setMainAddress.set(personId, newMainAddressId));
     }
 
     @Test
@@ -254,7 +256,7 @@ class SetMainAddressTest {
         assertEquals(oldMainAddress.getPerson(), person);
         assertTrue(person.getAddresses().contains(oldMainAddress));
 
-        assertThrows(RuntimeException.class, () -> setMainAddress.set(personId, newMainAddressId));
+        assertThrows(EntityNotFoundException.class, () -> setMainAddress.set(personId, newMainAddressId));
     }
 
 }
