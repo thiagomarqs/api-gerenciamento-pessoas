@@ -8,6 +8,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 public class FindPeople {
 
@@ -18,31 +20,27 @@ public class FindPeople {
         this.personRepository = personRepository;
     }
 
-    Person findOne(@NotNull Long id) {
+    public Person findOne(@NotNull Long id) {
         return personRepository.findById(id).orElseThrow(() -> EntityNotFoundException.of(id, Person.class));
     }
 
-    Iterable<Person> findMany(Iterable<Long> ids) {
+    public List<Person> findMany(Iterable<Long> ids) {
         return personRepository.findAllById(ids);
     }
 
-    Iterable<Person> findAll() {
+    public List<Person> findAll() {
         return personRepository.findAll();
     }
 
-    Iterable<Person> findAllActive() {
-        return personRepository.findAllByActiveTrue();
+    public List<Person> findAllByActive(boolean active) {
+        return personRepository.findAllByActive(active);
     }
 
-    Iterable<Person> findAllInactive() {
-        return personRepository.findAllByActiveFalse();
+    public List<Person> findAllByFullNameLike(@NotBlank String fullName) {
+        return personRepository.findAllByFullNameContainingIgnoreCase(fullName);
     }
 
-    Iterable<Person> findAllByFullNameLike(@NotBlank String fullName) {
-        return personRepository.findAllByFullNameContaining(fullName);
-    }
-
-    Iterable<Person> findAllByAddressCity(@NotBlank String city) {
+    public List<Person> findAllByAddressCity(@NotBlank String city) {
         return personRepository.findAllByAddresses_City(city);
     }
 

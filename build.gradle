@@ -23,6 +23,7 @@ dependencies {
 	implementation 'com.h2database:h2:2.2.224'
 	implementation 'com.google.code.gson:gson:2.10.1'
 	implementation 'org.mapstruct:mapstruct:1.5.5.Final'
+	implementation 'org.springdoc:springdoc-openapi-ui:1.8.0'
 	annotationProcessor "org.mapstruct:mapstruct-processor:1.5.5.Final"
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	testImplementation 'org.mockito:mockito-core:5.11.0'
@@ -31,4 +32,14 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+compileJava {
+	options.compilerArgs += [
+			'-Amapstruct.suppressGeneratorTimestamp=true',
+			'-Amapstruct.suppressGeneratorVersionInfoComment=true',
+			'-Amapstruct.verbose=true',
+			'-Amapstruct.disableBuilders=true',
+			'-Amapstruct.defaultComponentModel=jsr330'
+	]
 }

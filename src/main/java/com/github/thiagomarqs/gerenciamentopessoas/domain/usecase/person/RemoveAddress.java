@@ -6,6 +6,7 @@ import com.github.thiagomarqs.gerenciamentopessoas.domain.exception.BusinessRule
 import com.github.thiagomarqs.gerenciamentopessoas.domain.exception.EntityNotFoundException;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.exception.messages.AddressBusinessRuleMessages;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.exception.messages.PersonBusinessRuleMessages;
+import com.github.thiagomarqs.gerenciamentopessoas.domain.repository.AddressRepository;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.repository.PersonRepository;
 import jakarta.inject.Inject;
 import org.springframework.stereotype.Component;
@@ -15,11 +16,13 @@ public class RemoveAddress {
 
     private final PersonRepository personRepository;
     private final FindPeople findPeople;
+    private final AddressRepository addressRepository;
 
     @Inject
-    public RemoveAddress(PersonRepository personRepository, FindPeople findPeople) {
+    public RemoveAddress(PersonRepository personRepository, FindPeople findPeople, AddressRepository addressRepository) {
         this.personRepository = personRepository;
         this.findPeople = findPeople;
+        this.addressRepository = addressRepository;
     }
 
     public Person remove(Long personId, Long addressId) {
@@ -27,11 +30,18 @@ public class RemoveAddress {
 
         throwIfFailsValidation(addressId, person);
 
-        person.getAddresses().removeIf(a -> a.getId().equals(addressId));
+        Address addressToRemove = person.getAddresses().stream()
+            .filter(a -> a.getId().equals(addressId))
+            .findFirst()
+            .orElseThrow(() -> EntityNotFoundException.of(addressId, Address.class));
+
+        person.getAddresses().remove(addressToRemove);
 
         var newMainAddress = person.getAddresses().getFirst();
 
         person.setMainAddress(newMainAddress);
+
+        addressRepository.delete(addressToRemove);
 
         return personRepository.save(person);
     }

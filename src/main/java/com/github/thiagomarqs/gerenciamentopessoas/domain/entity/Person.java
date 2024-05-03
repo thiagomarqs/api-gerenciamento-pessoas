@@ -3,6 +3,7 @@ package com.github.thiagomarqs.gerenciamentopessoas.domain.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 
+import java.beans.ConstructorProperties;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -17,23 +18,15 @@ public class Person implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @NotBlank
-    @Size(min = 10, max = 255)
     private String fullName;
-
-    @NotNull
-    @PastOrPresent
     private LocalDate birthDate;
 
-    @NotEmpty
     @OneToMany(mappedBy = "person", cascade = CascadeType.ALL)
     private List<Address> addresses = new ArrayList<>();
 
     @OneToOne(optional = false, cascade = CascadeType.ALL)
     private Address mainAddress;
 
-    @NotNull
     private boolean active = true;
 
     public Person() {}
@@ -43,6 +36,16 @@ public class Person implements Serializable {
         this.birthDate = birthDate;
         this.addresses = addresses;
         this.mainAddress = mainAddress;
+    }
+
+    @ConstructorProperties({"id", "fullName", "birthDate", "addresses", "mainAddress", "active"})
+    public Person(Long id, String fullName, LocalDate birthDate, List<Address> addresses, Address mainAddress, boolean active) {
+        this.id = id;
+        this.fullName = fullName;
+        this.birthDate = birthDate;
+        this.addresses = addresses;
+        this.mainAddress = mainAddress;
+        this.active = active;
     }
 
     public static Builder builder() {
@@ -125,6 +128,11 @@ public class Person implements Serializable {
 
         public Builder address(Address address) {
             person.addAddress(address);
+            return this;
+        }
+
+        public Builder addresses(List<Address> addresses) {
+            person.addresses = addresses;
             return this;
         }
 

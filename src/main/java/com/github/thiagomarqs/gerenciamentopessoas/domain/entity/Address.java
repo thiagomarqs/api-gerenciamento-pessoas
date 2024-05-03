@@ -1,11 +1,8 @@
 package com.github.thiagomarqs.gerenciamentopessoas.domain.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
 
+import java.beans.ConstructorProperties;
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -17,41 +14,29 @@ public class Address implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @NotBlank
-    @Size(min = 10, max = 255)
     private String address;
-
-    @NotBlank
-    @Pattern(regexp = "\\d{8}")
     private String cep;
-
-    @NotBlank
-    @Size(min = 1, max = 5)
     private String number;
-
-    @NotBlank
-    @Size(min = 3, max = 50)
     private String city;
-
-    @NotBlank
-    @Size(min = 3, max = 50)
     private String state;
 
     @ManyToOne
     private Person person;
 
-    @NotNull
     private boolean active = true;
 
     public Address() {}
-    public Address(Long id, String address, String cep, String number, String city, String state) {
+
+    @ConstructorProperties({"id", "address", "cep", "number", "city", "state", "person", "active"})
+    public Address(Long id, String address, String cep, String number, String city, String state, Person person, boolean active) {
         this.id = id;
         this.address = address;
         this.cep = cep;
         this.number = number;
         this.city = city;
         this.state = state;
+        this.person = person;
+        this.active = active;
     }
 
     public static Builder builder() {
@@ -110,12 +95,16 @@ public class Address implements Serializable {
         this.person = person;
     }
 
-    public boolean isActive() {
+    public Boolean isActive() {
         return active;
     }
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    public void setId(Long addressId) {
+        this.id = addressId;
     }
 
     public static class Builder {

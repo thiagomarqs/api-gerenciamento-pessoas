@@ -152,4 +152,61 @@ class EditPersonTest {
 
     }
 
+    @Test
+    void shouldActivateAllAddressesWhenReactivatingPerson() {
+
+        var personId = 1L;
+
+        var address = Address.builder()
+                .id(1L)
+                .address("Rua Teste 111")
+                .cep("12345678")
+                .active(false)
+                .city(city)
+                .state(state)
+                .build();
+
+        var address2 = Address.builder()
+                .id(2L)
+                .address("Avenida Teste 555")
+                .cep("87654321")
+                .active(false)
+                .city(city)
+                .state(state)
+                .build();
+
+        var person = Person.builder()
+                .id(personId)
+                .fullName("Fulano de Tal")
+                .active(false)
+                .birthDate(LocalDate.of(1990, 1, 1))
+                .address(address)
+                .mainAddress(address)
+                .build();
+
+        var edited = Person.builder()
+                .id(personId)
+                .fullName("Fulano de Tal")
+                .active(true)
+                .birthDate(LocalDate.of(1990, 1, 1))
+                .address(address)
+                .mainAddress(address)
+                .build();
+
+        when(findPeople.findOne(personId)).thenReturn(person);
+
+        person.getAddresses().forEach(a -> {
+            assertFalse(a.isActive());
+            assertEquals(person, a.getPerson());
+        });
+
+        editPerson.edit(personId, edited);
+
+        person.getAddresses().forEach(a -> {
+            assertTrue(a.isActive());
+            assertEquals(person, a.getPerson());
+        });
+
+    }
+
 }

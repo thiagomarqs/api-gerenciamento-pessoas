@@ -52,12 +52,24 @@ public class EditAddress {
     }
 
     private void updateAddressFields(Address edited, Address address) {
-        address.setAddress(edited.getAddress());
-        address.setCep(edited.getCep());
-        address.setNumber(edited.getNumber());
-        address.setState(edited.getState());
-        address.setCity(edited.getCity());
-        address.setActive(edited.isActive());
+        if (edited.getAddress() != null) {
+            address.setAddress(edited.getAddress());
+        }
+        if (edited.getCep() != null) {
+            address.setCep(edited.getCep());
+        }
+        if (edited.getNumber() != null) {
+            address.setNumber(edited.getNumber());
+        }
+        if (edited.getState() != null) {
+            address.setState(edited.getState());
+        }
+        if (edited.getCity() != null) {
+            address.setCity(edited.getCity());
+        }
+        if (edited.isActive() != null) {
+            address.setActive(edited.isActive());
+        }
     }
 
     private void throwIfInvalid(Long addressId, Address edited, Person person) {

@@ -21,12 +21,22 @@ public class EditPerson {
 
         var person = findPeople.findOne(personId);
 
-        person.setFullName(edited.getFullName());
-        person.setBirthDate(edited.getBirthDate());
+        if(person.getFullName() != null) {
+            person.setFullName(edited.getFullName());
+        }
+
+        if(person.getBirthDate() != null) {
+            person.setBirthDate(edited.getBirthDate());
+        }
 
         if(!edited.isActive()) {
             person.getAddresses().forEach(a -> a.setActive(false));
             person.setActive(false);
+        }
+
+        if(!person.isActive() && edited.isActive()) {
+            person.getAddresses().forEach(a -> a.setActive(true));
+            person.setActive(true);
         }
 
         return personRepository.save(person);
