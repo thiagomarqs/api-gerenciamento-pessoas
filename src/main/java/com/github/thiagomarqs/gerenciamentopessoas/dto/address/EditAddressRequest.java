@@ -11,6 +11,7 @@ public record EditAddressRequest(
         String number,
         String city,
         String state,
-        boolean active
+        boolean active,
+        Boolean isMain
 ) {
 }

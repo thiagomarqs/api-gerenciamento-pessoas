@@ -7,5 +7,6 @@ public record AddressResponse(
     String number,
     String city,
     String state,
-    boolean active
+    boolean active,
+    Boolean isMain
 ) { }

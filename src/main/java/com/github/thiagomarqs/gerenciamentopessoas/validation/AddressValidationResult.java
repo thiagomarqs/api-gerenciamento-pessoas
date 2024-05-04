@@ -15,4 +15,8 @@ public class AddressValidationResult {
         return !invalidCeps.isEmpty();
     }
 
+    public List<String> getInvalidCeps() {
+        return invalidCeps;
+    }
+
 }

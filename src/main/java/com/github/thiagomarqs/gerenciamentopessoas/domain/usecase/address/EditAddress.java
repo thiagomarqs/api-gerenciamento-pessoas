@@ -6,6 +6,7 @@ import com.github.thiagomarqs.gerenciamentopessoas.domain.exception.BusinessRule
 import com.github.thiagomarqs.gerenciamentopessoas.domain.exception.messages.AddressBusinessRuleMessages;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.exception.messages.PersonBusinessRuleMessages;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.repository.AddressRepository;
+import com.github.thiagomarqs.gerenciamentopessoas.validation.AddressValidator;
 import jakarta.inject.Inject;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.stereotype.Component;
@@ -15,11 +16,13 @@ public class EditAddress {
 
     private final AddressRepository addressRepository;
     private final FindAddresses findAddresses;
+    private final AddressValidator addressValidator;
 
     @Inject
-    public EditAddress(AddressRepository addressRepository, FindAddresses findAddresses) {
+    public EditAddress(AddressRepository addressRepository, FindAddresses findAddresses, AddressValidator addressValidator) {
         this.addressRepository = addressRepository;
         this.findAddresses = findAddresses;
+        this.addressValidator = addressValidator;
     }
 
     public Address edit(@NotNull Long addressId, @NotNull Address edited) {
@@ -39,6 +42,11 @@ public class EditAddress {
 
         return addressRepository.save(address);
 
+    }
+
+    private void throwIfInvalid(Long addressId, Address edited, Person person) {
+        throwIfInvalidWhenDeactivatingAddress(addressId, edited, person);
+        addressValidator.throwIfInvalidCep(edited);
     }
 
     private void automaticallyChangeMainAddressToRemainingAddress(Long addressId, Person person) {
@@ -70,9 +78,12 @@ public class EditAddress {
         if (edited.isActive() != null) {
             address.setActive(edited.isActive());
         }
+        if (edited.getIsMain() != null) {
+            address.setIsMain(edited.getIsMain());
+        }
     }
 
-    private void throwIfInvalid(Long addressId, Address edited, Person person) {
+    private void throwIfInvalidWhenDeactivatingAddress(Long addressId, Address edited, Person person) {
         boolean isTryingToDeactivateAddress = !edited.isActive();
         boolean isMainAddress = person.getMainAddress().getId().equals(addressId);
         int addressCount = person.getAddresses().size();

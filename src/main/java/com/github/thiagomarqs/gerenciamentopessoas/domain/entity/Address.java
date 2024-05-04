@@ -24,11 +24,14 @@ public class Address implements Serializable {
     private Person person;
 
     private boolean active = true;
+    private Boolean isMain;
 
-    public Address() {}
+    public Address(boolean isMain) {
+        this.isMain = isMain;
+    }
 
     @ConstructorProperties({"id", "address", "cep", "number", "city", "state", "person", "active"})
-    public Address(Long id, String address, String cep, String number, String city, String state, Person person, boolean active) {
+    public Address(Long id, String address, String cep, String number, String city, String state, Person person, boolean active, boolean isMain) {
         this.id = id;
         this.address = address;
         this.cep = cep;
@@ -37,6 +40,11 @@ public class Address implements Serializable {
         this.state = state;
         this.person = person;
         this.active = active;
+        this.isMain = isMain;
+    }
+
+    public Address() {
+
     }
 
     public static Builder builder() {
@@ -107,6 +115,14 @@ public class Address implements Serializable {
         this.id = addressId;
     }
 
+    public Boolean getIsMain() {
+        return isMain != null ? isMain : false;
+    }
+
+    public void setIsMain(Boolean main) {
+        isMain = main;
+    }
+
     public static class Builder {
 
         public Address address = new Address();
@@ -148,6 +164,11 @@ public class Address implements Serializable {
 
         public Builder person(Person person) {
             this.address.person = person;
+            return this;
+        }
+
+        public Builder main(boolean isMain) {
+            this.address.isMain = isMain;
             return this;
         }
 

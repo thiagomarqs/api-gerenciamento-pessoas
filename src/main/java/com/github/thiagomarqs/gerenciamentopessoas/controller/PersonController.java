@@ -4,11 +4,10 @@ import com.github.thiagomarqs.gerenciamentopessoas.domain.entity.Person;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.usecase.person.CreatePerson;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.usecase.person.EditPerson;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.usecase.person.FindPeople;
-import com.github.thiagomarqs.gerenciamentopessoas.dto.person.EditPersonRequest;
 import com.github.thiagomarqs.gerenciamentopessoas.dto.person.CreatePersonRequest;
+import com.github.thiagomarqs.gerenciamentopessoas.dto.person.EditPersonRequest;
 import com.github.thiagomarqs.gerenciamentopessoas.dto.person.GetManyPeopleRequest;
 import com.github.thiagomarqs.gerenciamentopessoas.mapper.PersonMapper;
-import com.github.thiagomarqs.gerenciamentopessoas.validation.AddressValidator;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.inject.Inject;
@@ -28,34 +27,25 @@ public class PersonController {
     private CreatePerson createPerson;
     private EditPerson editPerson;
     private FindPeople findPeople;
-    private AddressValidator addressValidator;
     private PersonMapper personMapper;
 
     @Inject
-    public PersonController(CreatePerson createPerson, EditPerson editPerson, FindPeople findPeople, AddressValidator addressValidator, PersonMapper personMapper) {
+    public PersonController(CreatePerson createPerson, EditPerson editPerson, FindPeople findPeople, PersonMapper personMapper) {
         this.createPerson = createPerson;
         this.editPerson = editPerson;
         this.findPeople = findPeople;
-        this.addressValidator = addressValidator;
         this.personMapper = personMapper;
     }
 
     @Operation(
             summary = "Criar pessoa",
-            description = "Cria uma pessoa a partir do corpo da requisição. Esta pessoa já deve possuir endereços cadastrados.",
+            description = "Cria uma pessoa a partir do corpo da requisição. Esta pessoa já deve possuir endereços cadastrados e pode-se definir o endereço principal definindo o atributo 'main' de apenas um dos endereços como true",
             tags = { "Pessoa" }
     )
     @PostMapping
     public ResponseEntity<?> create(@RequestBody @Valid CreatePersonRequest request) {
 
         var person = personMapper.createPersonRequestToPerson(request);
-        var addresses = person.getAddresses();
-        var addressValidationResult = addressValidator.validateMany(addresses);
-
-        if(addressValidationResult.hasFailures()) {
-            return ResponseEntity.badRequest().body(addressValidationResult);
-        }
-
         var saved = createPerson.create(person);
         var response = personMapper.personToPersonResponse(saved);
 

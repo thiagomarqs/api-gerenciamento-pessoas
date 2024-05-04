@@ -1,7 +1,6 @@
 package com.github.thiagomarqs.gerenciamentopessoas.domain.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
 
 import java.beans.ConstructorProperties;
 import java.io.Serializable;
@@ -96,6 +95,7 @@ public class Person implements Serializable {
     }
 
     public void setMainAddress(Address newMainAddress) {
+        newMainAddress.setIsMain(true);
         this.mainAddress = newMainAddress;
     }
 

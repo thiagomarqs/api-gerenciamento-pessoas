@@ -19,5 +19,7 @@ public record CreateAddressRequest(
         String city,
 
         @NotBlank
-        String state
+        String state,
+
+        Boolean isMain
 ) { }

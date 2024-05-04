@@ -5,6 +5,7 @@ import com.github.thiagomarqs.gerenciamentopessoas.domain.entity.Person;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.exception.BusinessRuleException;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.exception.messages.AddressBusinessRuleMessages;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.repository.PersonRepository;
+import com.github.thiagomarqs.gerenciamentopessoas.validation.AddressValidator;
 import jakarta.inject.Inject;
 import org.springframework.stereotype.Component;
 
@@ -13,24 +14,31 @@ public class AddAddress {
 
     private final PersonRepository personRepository;
     private final FindPeople findPeople;
+    private final AddressValidator addressValidator;
 
     @Inject
-    public AddAddress(PersonRepository personRepository, FindPeople findPeople) {
+    public AddAddress(PersonRepository personRepository, FindPeople findPeople, AddressValidator addressValidator) {
         this.personRepository = personRepository;
         this.findPeople = findPeople;
+        this.addressValidator = addressValidator;
     }
 
     public Person add(Long personId, Address newAddress) {
 
         var person = findPeople.findOne(personId);
 
-        throwIfDuplicatedAddress(newAddress, person);
+        throwIfInvalid(newAddress, person);
 
         person.addAddress(newAddress);
 
         return personRepository.save(person);
-
     }
+
+    private void throwIfInvalid(Address newAddress, Person person) {
+        throwIfDuplicatedAddress(newAddress, person);
+        addressValidator.throwIfInvalidCep(newAddress);
+    }
+
 
     private void throwIfDuplicatedAddress(Address newAddress, Person person) {
         boolean isDuplicate = person.getAddresses().stream().anyMatch(a ->
