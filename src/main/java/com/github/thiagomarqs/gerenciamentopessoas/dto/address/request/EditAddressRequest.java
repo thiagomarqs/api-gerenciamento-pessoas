@@ -1,4 +1,4 @@
-package com.github.thiagomarqs.gerenciamentopessoas.dto.address;
+package com.github.thiagomarqs.gerenciamentopessoas.dto.address.request;
 
 import jakarta.validation.constraints.Pattern;
 

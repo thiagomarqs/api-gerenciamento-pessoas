@@ -4,9 +4,10 @@ import com.github.thiagomarqs.gerenciamentopessoas.domain.entity.Person;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.usecase.person.CreatePerson;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.usecase.person.EditPerson;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.usecase.person.FindPeople;
-import com.github.thiagomarqs.gerenciamentopessoas.dto.person.CreatePersonRequest;
-import com.github.thiagomarqs.gerenciamentopessoas.dto.person.EditPersonRequest;
-import com.github.thiagomarqs.gerenciamentopessoas.dto.person.GetManyPeopleRequest;
+import com.github.thiagomarqs.gerenciamentopessoas.dto.person.request.CreatePersonRequest;
+import com.github.thiagomarqs.gerenciamentopessoas.dto.person.request.EditPersonRequest;
+import com.github.thiagomarqs.gerenciamentopessoas.dto.person.request.GetManyPeopleRequest;
+import com.github.thiagomarqs.gerenciamentopessoas.hateoas.links.PersonLinks;
 import com.github.thiagomarqs.gerenciamentopessoas.mapper.PersonMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -14,6 +15,8 @@ import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -48,8 +51,10 @@ public class PersonController {
         var person = personMapper.createPersonRequestToPerson(request);
         var saved = createPerson.create(person);
         var response = personMapper.personToPersonResponse(saved);
+        Long personId = response.id();
+        var model = EntityModel.of(response, PersonLinks.individualPersonLinks(personId));
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity.created(model.getRequiredLink("self").toUri()).body(model);
     }
 
     @Operation(
@@ -63,8 +68,9 @@ public class PersonController {
         var person = personMapper.editPersonRequestToPerson(request);
         var edited = editPerson.edit(personId, person);
         var response = personMapper.personToEditedPersonResponse(edited);
+        var model = EntityModel.of(response, PersonLinks.individualPersonLinks(personId));
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(model);
     }
 
     @Operation(
@@ -76,7 +82,9 @@ public class PersonController {
     public ResponseEntity<?> getOne(@PathVariable("id") Long personId) {
         var person = findPeople.findOne(personId);
         var response = personMapper.personToPersonResponse(person);
-        return ResponseEntity.ok(response);
+        var model = EntityModel.of(response, PersonLinks.individualPersonLinks(personId));
+
+        return ResponseEntity.ok(model);
     }
 
     @Operation(
@@ -102,7 +110,9 @@ public class PersonController {
         }
 
         var response = personMapper.personListToPersonResponseList(people);
-        return ResponseEntity.ok(response);
+        var model = CollectionModel.of(response, PersonLinks.personCollectionLinks());
+
+        return ResponseEntity.ok(model);
     }
 
     @Operation(
@@ -114,7 +124,8 @@ public class PersonController {
     public ResponseEntity<?> getAllByFullNameLike(@PathVariable("fullName") @NotBlank String fullName){
         var people = findPeople.findAllByFullNameLike(fullName);
         var response = personMapper.personListToPersonResponseList(people);
-        return ResponseEntity.ok(response);
+        var model = CollectionModel.of(response, PersonLinks.personCollectionLinks());
+        return ResponseEntity.ok(model);
     }
 
     @Operation(
@@ -126,7 +137,8 @@ public class PersonController {
     public ResponseEntity<?> getAllByCity(@PathVariable("city") @NotBlank String city){
         var people = findPeople.findAllByAddressCity(city);
         var response = personMapper.personListToPersonResponseList(people);
-        return ResponseEntity.ok(response);
+        var model = CollectionModel.of(response, PersonLinks.personCollectionLinks());
+        return ResponseEntity.ok(model);
     }
 
 }

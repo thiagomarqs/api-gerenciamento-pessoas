@@ -4,6 +4,7 @@ import com.github.thiagomarqs.gerenciamentopessoas.domain.entity.Address;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.entity.Person;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.exception.BusinessRuleException;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.exception.EntityNotFoundException;
+import com.github.thiagomarqs.gerenciamentopessoas.domain.repository.AddressRepository;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.repository.PersonRepository;
 import com.github.thiagomarqs.gerenciamentopessoas.validation.AddressValidator;
 import org.junit.jupiter.api.Test;
@@ -24,6 +25,9 @@ class AddAddressTest {
     PersonRepository personRepository;
 
     @Mock
+    AddressRepository addressRepository;
+
+    @Mock
     AddressValidator addressValidator;
 
     @Mock
@@ -38,14 +42,6 @@ class AddAddressTest {
     @Test
     void shouldAddAddress() {
 
-        var address = Address.builder()
-                .address("Avenida Teste")
-                .cep("87654321")
-                .number("111")
-                .city(city)
-                .state(state)
-                .build();
-
         var newAddress = Address.builder()
                 .address("Rua Teste")
                 .cep("12345678")
@@ -59,8 +55,6 @@ class AddAddressTest {
         var person = Person.builder()
                 .id(personId)
                 .fullName("Fulano de Tal")
-                .address(address)
-                .mainAddress(address)
                 .birthDate(LocalDate.of(1990, 1, 1))
                 .build();
 
@@ -68,9 +62,8 @@ class AddAddressTest {
 
         addAddress.add(personId, newAddress);
 
-        verify(personRepository).save(person);
+        verify(addressRepository).save(newAddress);
 
-        assertTrue(person.getAddresses().contains(newAddress));
         assertEquals(person, newAddress.getPerson());
 
     }
@@ -108,7 +101,7 @@ class AddAddressTest {
         when(findPeople.findOne(personId)).thenReturn(person);
 
         assertThrows(BusinessRuleException.class, () -> addAddress.add(personId, newAddress));
-        verifyNoInteractions(personRepository);
+        verifyNoInteractions(addressRepository);
         assertFalse(person.getAddresses().contains(newAddress));
 
     }
@@ -129,7 +122,7 @@ class AddAddressTest {
         when(findPeople.findOne(personId)).thenThrow(EntityNotFoundException.of(personId, Person.class));
 
         assertThrows(EntityNotFoundException.class, () -> addAddress.add(personId, newAddress));
-        verifyNoInteractions(personRepository);
+        verifyNoInteractions(addressRepository);
 
     }
 

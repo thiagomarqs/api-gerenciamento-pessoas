@@ -1,10 +1,10 @@
 package com.github.thiagomarqs.gerenciamentopessoas.mapper;
 
 import com.github.thiagomarqs.gerenciamentopessoas.domain.entity.Address;
-import com.github.thiagomarqs.gerenciamentopessoas.dto.address.AddAddressRequest;
-import com.github.thiagomarqs.gerenciamentopessoas.dto.address.AddressResponse;
-import com.github.thiagomarqs.gerenciamentopessoas.dto.address.CreatePersonAddressRequest;
-import com.github.thiagomarqs.gerenciamentopessoas.dto.address.EditAddressRequest;
+import com.github.thiagomarqs.gerenciamentopessoas.dto.address.request.AddAddressRequest;
+import com.github.thiagomarqs.gerenciamentopessoas.dto.address.request.CreatePersonAddressRequest;
+import com.github.thiagomarqs.gerenciamentopessoas.dto.address.request.EditAddressRequest;
+import com.github.thiagomarqs.gerenciamentopessoas.dto.address.response.AddressResponse;
 import com.github.thiagomarqs.gerenciamentopessoas.integration.address.AddressResult;
 import com.github.thiagomarqs.gerenciamentopessoas.integration.address.viacep.ViaCepAddressResult;
 import org.mapstruct.AfterMapping;

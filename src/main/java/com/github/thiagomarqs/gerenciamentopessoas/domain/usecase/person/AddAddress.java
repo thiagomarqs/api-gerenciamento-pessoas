@@ -4,7 +4,7 @@ import com.github.thiagomarqs.gerenciamentopessoas.domain.entity.Address;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.entity.Person;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.exception.BusinessRuleException;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.exception.messages.AddressBusinessRuleMessages;
-import com.github.thiagomarqs.gerenciamentopessoas.domain.repository.PersonRepository;
+import com.github.thiagomarqs.gerenciamentopessoas.domain.repository.AddressRepository;
 import com.github.thiagomarqs.gerenciamentopessoas.validation.AddressValidator;
 import jakarta.inject.Inject;
 import org.springframework.stereotype.Component;
@@ -12,26 +12,26 @@ import org.springframework.stereotype.Component;
 @Component
 public class AddAddress {
 
-    private final PersonRepository personRepository;
+    private final AddressRepository addressRepository;
     private final FindPeople findPeople;
     private final AddressValidator addressValidator;
 
     @Inject
-    public AddAddress(PersonRepository personRepository, FindPeople findPeople, AddressValidator addressValidator) {
-        this.personRepository = personRepository;
+    public AddAddress(AddressRepository addressRepository, FindPeople findPeople, AddressValidator addressValidator) {
+        this.addressRepository = addressRepository;
         this.findPeople = findPeople;
         this.addressValidator = addressValidator;
     }
 
-    public Person add(Long personId, Address newAddress) {
+    public Address add(Long personId, Address newAddress) {
 
         var person = findPeople.findOne(personId);
 
         throwIfInvalid(newAddress, person);
 
-        person.addAddress(newAddress);
+        newAddress.setPerson(person);
 
-        return personRepository.save(person);
+        return addressRepository.save(newAddress);
     }
 
     private void throwIfInvalid(Address newAddress, Person person) {

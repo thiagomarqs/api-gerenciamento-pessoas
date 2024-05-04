@@ -1,6 +1,6 @@
-package com.github.thiagomarqs.gerenciamentopessoas.dto.person;
+package com.github.thiagomarqs.gerenciamentopessoas.dto.person.request;
 
-import com.github.thiagomarqs.gerenciamentopessoas.dto.address.CreatePersonAddressRequest;
+import com.github.thiagomarqs.gerenciamentopessoas.dto.address.request.CreatePersonAddressRequest;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.PastOrPresent;

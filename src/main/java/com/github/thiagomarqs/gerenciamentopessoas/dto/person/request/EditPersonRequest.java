@@ -1,4 +1,4 @@
-package com.github.thiagomarqs.gerenciamentopessoas.dto.person;
+package com.github.thiagomarqs.gerenciamentopessoas.dto.person.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

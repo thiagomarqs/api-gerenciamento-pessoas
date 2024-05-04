@@ -5,10 +5,10 @@ import com.github.thiagomarqs.gerenciamentopessoas.domain.usecase.address.FindAd
 import com.github.thiagomarqs.gerenciamentopessoas.domain.usecase.person.AddAddress;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.usecase.person.RemoveAddress;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.usecase.person.SetMainAddress;
-import com.github.thiagomarqs.gerenciamentopessoas.dto.address.AddAddressRequest;
-import com.github.thiagomarqs.gerenciamentopessoas.dto.address.CreatePersonAddressRequest;
-import com.github.thiagomarqs.gerenciamentopessoas.dto.address.EditAddressRequest;
-import com.github.thiagomarqs.gerenciamentopessoas.dto.address.NewMainAddressRequest;
+import com.github.thiagomarqs.gerenciamentopessoas.dto.address.request.AddAddressRequest;
+import com.github.thiagomarqs.gerenciamentopessoas.dto.address.request.EditAddressRequest;
+import com.github.thiagomarqs.gerenciamentopessoas.dto.address.request.NewMainAddressRequest;
+import com.github.thiagomarqs.gerenciamentopessoas.hateoas.links.AddressLinks;
 import com.github.thiagomarqs.gerenciamentopessoas.mapper.AddressMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -16,6 +16,8 @@ import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -47,13 +49,14 @@ public class AddressController {
             tags = {"Pessoa", "Endereço"}
     )
     @GetMapping("{personId}/addresses")
-    public ResponseEntity<?> getAll(
+    public ResponseEntity<?> getPersonAddresses(
             @RequestParam(value = "active", required = false) Boolean active,
             @PathVariable("personId") @NotNull Long personId
     ) {
         var addresses = active != null ? findAddresses.findAllByActive(personId, active) : findAddresses.findAll(personId);
         var response = addressMapper.addressListToAddressResponseList(addresses);
-        return ResponseEntity.ok(response);
+        var model = CollectionModel.of(response, AddressLinks.getAddressCollectionLinks(personId));
+        return ResponseEntity.ok(model);
     }
 
     @Operation(
@@ -65,7 +68,8 @@ public class AddressController {
     public ResponseEntity<?> getAddress(@PathVariable("personId") @NotNull Long personId, @PathVariable("addressId") @NotNull Long addressId) {
         var address = findAddresses.findOne(addressId);
         var response = addressMapper.addressToAddressResponse(address);
-        return ResponseEntity.ok(response);
+        var model = EntityModel.of(response, AddressLinks.getIndividualAddressLinks(personId, addressId));
+        return ResponseEntity.ok(model);
     }
 
     @Operation(
@@ -77,7 +81,8 @@ public class AddressController {
     public ResponseEntity<?> getAllByAddressLike(@PathVariable("personId") @NotNull Long personId, @PathVariable("address") @NotBlank String address) {
         var addresses = findAddresses.findAllByAddressLike(personId, address);
         var response = addressMapper.addressListToAddressResponseList(addresses);
-        return ResponseEntity.ok(response);
+        var model = CollectionModel.of(response, AddressLinks.getAddressCollectionLinks(personId));
+        return ResponseEntity.ok(model);
     }
 
     @Operation(
@@ -93,7 +98,8 @@ public class AddressController {
         var edited = addressMapper.editAddressRequestToAddress(request, addressId);
         var address = editAddress.edit(addressId, edited);
         var response = addressMapper.addressToAddressResponse(address);
-        return ResponseEntity.ok(response);
+        var model = EntityModel.of(response, AddressLinks.getIndividualAddressLinks(personId, addressId));
+        return ResponseEntity.ok(model);
     }
 
     @Operation(
@@ -112,13 +118,13 @@ public class AddressController {
             description = "Adiciona um novo endereço à pessoa especificada",
             tags = {"Pessoa", "Endereço"}
     )
-    @PostMapping("{id}/addresses")
-    public ResponseEntity<?> addAddress(@PathVariable("id") @NotNull Long personId, @RequestBody @NotNull @Valid AddAddressRequest request) {
+    @PostMapping("{personId}/addresses")
+    public ResponseEntity<?> addAddress(@PathVariable("personId") @NotNull Long personId, @RequestBody @NotNull @Valid AddAddressRequest request) {
         var address = addressMapper.addAddressRequestToAddress(request);
-        var person = addAddress.add(personId, address);
-        var addresses = person.getAddresses();
-        var response = addressMapper.addressListToAddressResponseList(addresses);
-        return ResponseEntity.ok(response);
+        var savedAddress = addAddress.add(personId, address);
+        var response = addressMapper.addressToAddressResponse(savedAddress);
+        var model = EntityModel.of(response, AddressLinks.getIndividualAddressLinks(personId, address.getId()));
+        return ResponseEntity.created(model.getRequiredLink("self").toUri()).body(model);
     }
 
     @Operation(
@@ -130,7 +136,9 @@ public class AddressController {
     public ResponseEntity<?> getMainAddress(@PathVariable("personId") @NotNull Long personId) {
         var address = findAddresses.findMainAddress(personId);
         var response = addressMapper.addressToAddressResponse(address);
-        return ResponseEntity.ok(response);
+        var addressId = address.getId();
+        var model = EntityModel.of(response, AddressLinks.getIndividualAddressLinks(personId, addressId));
+        return ResponseEntity.ok(model);
     }
 
     @Operation(
