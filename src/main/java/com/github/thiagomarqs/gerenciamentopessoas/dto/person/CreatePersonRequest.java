@@ -1,6 +1,6 @@
 package com.github.thiagomarqs.gerenciamentopessoas.dto.person;
 
-import com.github.thiagomarqs.gerenciamentopessoas.dto.address.CreateAddressRequest;
+import com.github.thiagomarqs.gerenciamentopessoas.dto.address.CreatePersonAddressRequest;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.PastOrPresent;
@@ -17,5 +17,5 @@ public record CreatePersonRequest(
         LocalDate birthDate,
 
         @NotEmpty
-        List<CreateAddressRequest> addresses
+        List<CreatePersonAddressRequest> addresses
 ) {}

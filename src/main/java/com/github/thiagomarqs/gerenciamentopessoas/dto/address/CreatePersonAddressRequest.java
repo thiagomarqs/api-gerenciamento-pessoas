@@ -3,7 +3,7 @@ package com.github.thiagomarqs.gerenciamentopessoas.dto.address;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 
-public record CreateAddressRequest(
+public record CreatePersonAddressRequest(
 
         @NotBlank
         String address,

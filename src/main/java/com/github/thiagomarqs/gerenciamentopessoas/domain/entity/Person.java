@@ -47,6 +47,10 @@ public class Person implements Serializable {
         this.active = active;
     }
 
+    public boolean hasMainAddress() {
+        return addresses.stream().anyMatch(a -> a.getIsMain() != null && a.getIsMain());
+    }
+
     public static Builder builder() {
         return new Builder();
     }

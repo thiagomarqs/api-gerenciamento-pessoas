@@ -32,10 +32,10 @@ public class EditAddress {
 
         throwIfInvalid(addressId, edited, person);
 
-        boolean shouldDeactivateMainAddress = !edited.isActive() && person.getMainAddress().getId().equals(addressId);
+        boolean isDeactivatingMainAddress = !edited.isActive() && person.getMainAddress().getId().equals(addressId);
 
-        if(shouldDeactivateMainAddress) {
-            automaticallyChangeMainAddressToRemainingAddress(addressId, person);
+        if(isDeactivatingMainAddress) {
+            automaticallyChangeMainAddressToRemainingActiveAddress(addressId, person);
         }
 
         updateAddressFields(edited, address);
@@ -49,7 +49,31 @@ public class EditAddress {
         addressValidator.throwIfInvalidCep(edited);
     }
 
-    private void automaticallyChangeMainAddressToRemainingAddress(Long addressId, Person person) {
+    private void throwIfInvalidWhenDeactivatingAddress(Long addressId, Address edited, Person person) {
+        boolean isTryingToDeactivateAddress = !edited.isActive();
+        boolean isPersonMainAddress = person.getMainAddress().getId().equals(addressId);
+        int addressCount = person.getAddresses().size();
+        boolean areAllOtherAddressesDeactivated = person.getAddresses()
+                .stream()
+                .filter(a -> !a.getId().equals(addressId))
+                .noneMatch(Address::isActive);
+
+        if(isTryingToDeactivateAddress) {
+            if(isPersonMainAddress && addressCount > 2) {
+                throw new BusinessRuleException(AddressBusinessRuleMessages.CANT_DEACTIVATE_ADDRESS_WHEN_MORE_THAN_TWO_ADDRESSES_FORMATTED);
+            }
+
+            if(addressCount == 1) {
+                throw new BusinessRuleException(PersonBusinessRuleMessages.PERSON_HAS_ONLY_ONE_ADDRESS);
+            }
+
+            if(areAllOtherAddressesDeactivated) {
+                throw new BusinessRuleException(AddressBusinessRuleMessages.ONLY_ACTIVE_ADDRESS_FORMATTED);
+            }
+        }
+    }
+
+    private void automaticallyChangeMainAddressToRemainingActiveAddress(Long addressId, Person person) {
         var remainingActiveAddress = person.getAddresses()
                 .stream()
                 .filter(a -> !a.getId().equals(addressId))
@@ -77,33 +101,6 @@ public class EditAddress {
         }
         if (edited.isActive() != null) {
             address.setActive(edited.isActive());
-        }
-        if (edited.getIsMain() != null) {
-            address.setIsMain(edited.getIsMain());
-        }
-    }
-
-    private void throwIfInvalidWhenDeactivatingAddress(Long addressId, Address edited, Person person) {
-        boolean isTryingToDeactivateAddress = !edited.isActive();
-        boolean isMainAddress = person.getMainAddress().getId().equals(addressId);
-        int addressCount = person.getAddresses().size();
-        boolean areAllOtherAddressesDeactivated = person.getAddresses()
-                .stream()
-                .filter(a -> !a.getId().equals(addressId))
-                .noneMatch(Address::isActive);
-
-        if(isTryingToDeactivateAddress) {
-            if(isMainAddress && addressCount > 2) {
-                throw new BusinessRuleException(AddressBusinessRuleMessages.CANT_DEACTIVATE_ADDRESS_WHEN_MORE_THAN_TWO_ADDRESSES_FORMATTED);
-            }
-
-            if(addressCount == 1) {
-                throw new BusinessRuleException(PersonBusinessRuleMessages.PERSON_HAS_ONLY_ONE_ADDRESS);
-            }
-
-            if(areAllOtherAddressesDeactivated) {
-                throw new BusinessRuleException(AddressBusinessRuleMessages.ONLY_ACTIVE_ADDRESS_FORMATTED);
-            }
         }
     }
 }

@@ -1,8 +1,8 @@
 package com.github.thiagomarqs.gerenciamentopessoas.mapper;
 
 import com.github.thiagomarqs.gerenciamentopessoas.domain.entity.Person;
-import com.github.thiagomarqs.gerenciamentopessoas.dto.person.CreatePersonRequest;
 import com.github.thiagomarqs.gerenciamentopessoas.dto.person.EditPersonRequest;
+import com.github.thiagomarqs.gerenciamentopessoas.dto.person.CreatePersonRequest;
 import com.github.thiagomarqs.gerenciamentopessoas.dto.person.EditedPersonResponse;
 import com.github.thiagomarqs.gerenciamentopessoas.dto.person.PersonResponse;
 import org.mapstruct.AfterMapping;

@@ -5,6 +5,7 @@ import com.github.thiagomarqs.gerenciamentopessoas.domain.entity.Person;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.exception.BusinessRuleException;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.exception.EntityNotFoundException;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.repository.PersonRepository;
+import com.github.thiagomarqs.gerenciamentopessoas.validation.AddressValidator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -21,6 +22,9 @@ class AddAddressTest {
 
     @Mock
     PersonRepository personRepository;
+
+    @Mock
+    AddressValidator addressValidator;
 
     @Mock
     FindPeople findPeople;
@@ -128,6 +132,5 @@ class AddAddressTest {
         verifyNoInteractions(personRepository);
 
     }
-
 
 }

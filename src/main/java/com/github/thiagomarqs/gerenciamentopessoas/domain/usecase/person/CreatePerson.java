@@ -31,7 +31,7 @@ public class CreatePerson {
     }
 
     private void setMainAddress(Person person) {
-        var hasMainAddressAlreadyBeenChosen = person.getAddresses().stream().filter(Address::getIsMain).count() > 0;
+        var hasMainAddressAlreadyBeenChosen = person.hasMainAddress();
 
         if(!hasMainAddressAlreadyBeenChosen) {
             setAddressAutomatically(person);
@@ -57,7 +57,7 @@ public class CreatePerson {
 
     private void throwIfMoreThanOneMainAddress(Person person) {
         var addresses = person.getAddresses();
-        var mainAddresses = addresses.stream().filter(Address::getIsMain).count();
+        var mainAddresses = addresses.stream().filter(a -> a.getIsMain() != null && a.getIsMain()).count();
 
         if(mainAddresses > 1) {
             throw new BusinessRuleException(AddressBusinessRuleMessages.TRYING_TO_SET_MORE_THAN_ONE_MAIN_ADDRESS);
@@ -71,7 +71,7 @@ public class CreatePerson {
     }
 
     private void throwIfCantSetMainAddressAutomatically(Person person) {
-        var hasMainAddress = person.getAddresses().stream().filter(Address::getIsMain).count() > 0;
+        var hasMainAddress = person.hasMainAddress();
         var hasMoreThanOneAddress = person.getAddresses().size() > 1;
 
         if (!hasMainAddress && hasMoreThanOneAddress) {

@@ -24,7 +24,8 @@ public class Address implements Serializable {
     private Person person;
 
     private boolean active = true;
-    private Boolean isMain;
+
+    private Boolean isMain = false;
 
     public Address(boolean isMain) {
         this.isMain = isMain;
@@ -116,11 +117,11 @@ public class Address implements Serializable {
     }
 
     public Boolean getIsMain() {
-        return isMain != null ? isMain : false;
+        return isMain;
     }
 
     public void setIsMain(Boolean main) {
-        isMain = main;
+        isMain = (main == null) ? false : main;
     }
 
     public static class Builder {
@@ -167,7 +168,7 @@ public class Address implements Serializable {
             return this;
         }
 
-        public Builder main(boolean isMain) {
+        public Builder isMain(boolean isMain) {
             this.address.isMain = isMain;
             return this;
         }

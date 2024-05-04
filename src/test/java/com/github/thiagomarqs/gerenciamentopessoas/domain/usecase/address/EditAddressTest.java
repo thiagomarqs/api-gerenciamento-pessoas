@@ -4,6 +4,7 @@ import com.github.thiagomarqs.gerenciamentopessoas.domain.entity.Address;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.entity.Person;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.exception.BusinessRuleException;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.repository.AddressRepository;
+import com.github.thiagomarqs.gerenciamentopessoas.validation.AddressValidator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -23,6 +24,9 @@ class EditAddressTest {
 
     @Mock
     FindAddresses findAddresses;
+
+    @Mock
+    AddressValidator addressValidator;
 
     @InjectMocks
     EditAddress editAddress;
@@ -55,6 +59,7 @@ class EditAddressTest {
         var edited = Address.builder()
                 .address("Avenida Teste")
                 .cep("87654321")
+                .number("321")
                 .active(true)
                 .city(city)
                 .state(state)
@@ -83,7 +88,7 @@ class EditAddressTest {
     }
 
     @Test
-    void shouldDeactivateMainAddressAndAutomaticallySetTheRemainingAddressAsTheMainOneWhenPersonHasOnlyTwoAddresses() {
+    void shouldDeactivateMainAddressAndAutomaticallySetTheRemainingAddressAsTheMainAddressWhenPersonHasOnlyTwoAddresses() {
 
         long addressId = 1L;
         long address2Id = 2L;

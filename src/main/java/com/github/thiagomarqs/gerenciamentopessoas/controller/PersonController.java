@@ -24,10 +24,10 @@ import java.util.List;
 @Tag(name = "Pessoas", description = "Gerenciamento de pessoas")
 public class PersonController {
 
-    private CreatePerson createPerson;
-    private EditPerson editPerson;
-    private FindPeople findPeople;
-    private PersonMapper personMapper;
+    private final CreatePerson createPerson;
+    private final EditPerson editPerson;
+    private final FindPeople findPeople;
+    private final PersonMapper personMapper;
 
     @Inject
     public PersonController(CreatePerson createPerson, EditPerson editPerson, FindPeople findPeople, PersonMapper personMapper) {

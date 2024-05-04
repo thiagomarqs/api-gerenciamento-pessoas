@@ -5,7 +5,8 @@ import com.github.thiagomarqs.gerenciamentopessoas.domain.usecase.address.FindAd
 import com.github.thiagomarqs.gerenciamentopessoas.domain.usecase.person.AddAddress;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.usecase.person.RemoveAddress;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.usecase.person.SetMainAddress;
-import com.github.thiagomarqs.gerenciamentopessoas.dto.address.CreateAddressRequest;
+import com.github.thiagomarqs.gerenciamentopessoas.dto.address.AddAddressRequest;
+import com.github.thiagomarqs.gerenciamentopessoas.dto.address.CreatePersonAddressRequest;
 import com.github.thiagomarqs.gerenciamentopessoas.dto.address.EditAddressRequest;
 import com.github.thiagomarqs.gerenciamentopessoas.dto.address.NewMainAddressRequest;
 import com.github.thiagomarqs.gerenciamentopessoas.mapper.AddressMapper;
@@ -81,7 +82,10 @@ public class AddressController {
 
     @Operation(
             summary = "Editar endereço",
-            description = "Edita o endereço especificado.",
+            description = "Edita o endereço especificado. " +
+                    "Se o endereço editado for desativado e for o endereço principal, o sistema automaticamente define o endereço ativo restante como principal. " +
+                    "Se houver mais de um endereço ativo restante, o sistema não define automaticamente um novo endereço principal e retorna erro." +
+                    "Não é possível alterar o 'isMain' de um endereço. Para alterar o endereço principal, utilize o endpoint PUT /api/people/{personId}/addresses/mai.",
             tags = {"Pessoa", "Endereço"}
     )
     @PatchMapping("{personId}/addresses/{addressId}")
@@ -109,8 +113,8 @@ public class AddressController {
             tags = {"Pessoa", "Endereço"}
     )
     @PostMapping("{id}/addresses")
-    public ResponseEntity<?> addAddress(@PathVariable("id") @NotNull Long personId, @RequestBody @NotNull @Valid CreateAddressRequest request) {
-        var address = addressMapper.createAddressRequestToAddress(request);
+    public ResponseEntity<?> addAddress(@PathVariable("id") @NotNull Long personId, @RequestBody @NotNull @Valid AddAddressRequest request) {
+        var address = addressMapper.addAddressRequestToAddress(request);
         var person = addAddress.add(personId, address);
         var addresses = person.getAddresses();
         var response = addressMapper.addressListToAddressResponseList(addresses);
