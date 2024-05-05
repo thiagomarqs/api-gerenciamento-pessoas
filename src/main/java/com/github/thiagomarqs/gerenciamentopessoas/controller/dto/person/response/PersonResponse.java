@@ -1,6 +1,6 @@
-package com.github.thiagomarqs.gerenciamentopessoas.dto.person.response;
+package com.github.thiagomarqs.gerenciamentopessoas.controller.dto.person.response;
 
-import com.github.thiagomarqs.gerenciamentopessoas.dto.address.response.AddressResponse;
+import com.github.thiagomarqs.gerenciamentopessoas.controller.dto.address.response.AddressResponse;
 
 import java.util.List;
 

@@ -1,13 +1,13 @@
 package com.github.thiagomarqs.gerenciamentopessoas.controller;
 
+import com.github.thiagomarqs.gerenciamentopessoas.controller.dto.person.request.CreatePersonRequest;
+import com.github.thiagomarqs.gerenciamentopessoas.controller.dto.person.request.EditPersonRequest;
+import com.github.thiagomarqs.gerenciamentopessoas.controller.dto.person.request.GetManyPeopleRequest;
+import com.github.thiagomarqs.gerenciamentopessoas.controller.hateoas.links.PersonLinks;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.entity.Person;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.usecase.person.CreatePerson;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.usecase.person.EditPerson;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.usecase.person.FindPeople;
-import com.github.thiagomarqs.gerenciamentopessoas.dto.person.request.CreatePersonRequest;
-import com.github.thiagomarqs.gerenciamentopessoas.dto.person.request.EditPersonRequest;
-import com.github.thiagomarqs.gerenciamentopessoas.dto.person.request.GetManyPeopleRequest;
-import com.github.thiagomarqs.gerenciamentopessoas.hateoas.links.PersonLinks;
 import com.github.thiagomarqs.gerenciamentopessoas.mapper.PersonMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

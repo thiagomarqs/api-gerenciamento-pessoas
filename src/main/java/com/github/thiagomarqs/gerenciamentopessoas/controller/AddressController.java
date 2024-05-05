@@ -1,14 +1,14 @@
 package com.github.thiagomarqs.gerenciamentopessoas.controller;
 
+import com.github.thiagomarqs.gerenciamentopessoas.controller.dto.address.request.AddAddressRequest;
+import com.github.thiagomarqs.gerenciamentopessoas.controller.dto.address.request.EditAddressRequest;
+import com.github.thiagomarqs.gerenciamentopessoas.controller.dto.address.request.NewMainAddressRequest;
+import com.github.thiagomarqs.gerenciamentopessoas.controller.hateoas.links.AddressLinks;
+import com.github.thiagomarqs.gerenciamentopessoas.domain.usecase.address.AddAddress;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.usecase.address.EditAddress;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.usecase.address.FindAddresses;
-import com.github.thiagomarqs.gerenciamentopessoas.domain.usecase.person.AddAddress;
-import com.github.thiagomarqs.gerenciamentopessoas.domain.usecase.person.RemoveAddress;
+import com.github.thiagomarqs.gerenciamentopessoas.domain.usecase.address.RemoveAddress;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.usecase.person.SetMainAddress;
-import com.github.thiagomarqs.gerenciamentopessoas.dto.address.request.AddAddressRequest;
-import com.github.thiagomarqs.gerenciamentopessoas.dto.address.request.EditAddressRequest;
-import com.github.thiagomarqs.gerenciamentopessoas.dto.address.request.NewMainAddressRequest;
-import com.github.thiagomarqs.gerenciamentopessoas.hateoas.links.AddressLinks;
 import com.github.thiagomarqs.gerenciamentopessoas.mapper.AddressMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

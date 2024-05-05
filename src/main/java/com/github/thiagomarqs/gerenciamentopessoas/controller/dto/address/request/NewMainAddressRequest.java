@@ -1,4 +1,4 @@
-package com.github.thiagomarqs.gerenciamentopessoas.dto.address.request;
+package com.github.thiagomarqs.gerenciamentopessoas.controller.dto.address.request;
 
 import jakarta.validation.constraints.NotNull;
 

@@ -1,4 +1,4 @@
-package com.github.thiagomarqs.gerenciamentopessoas.dto.person.response;
+package com.github.thiagomarqs.gerenciamentopessoas.controller.dto.person.response;
 
 public record EditedPersonResponse(
         Long id,

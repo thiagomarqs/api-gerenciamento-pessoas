@@ -104,7 +104,7 @@ public class Address implements Serializable {
         this.person = person;
     }
 
-    public Boolean isActive() {
+    public Boolean getActive() {
         return active;
     }
 

@@ -21,11 +21,11 @@ public class EditPerson {
 
         var person = findPeople.findOne(personId);
 
-        if(person.getFullName() != null) {
+        if(!edited.getFullName().isBlank()) {
             person.setFullName(edited.getFullName());
         }
 
-        if(person.getBirthDate() != null) {
+        if(edited.getBirthDate() != null) {
             person.setBirthDate(edited.getBirthDate());
         }
 

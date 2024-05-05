@@ -23,7 +23,7 @@ public class Person implements Serializable {
     @OneToMany(mappedBy = "person", cascade = CascadeType.ALL)
     private List<Address> addresses = new ArrayList<>();
 
-    @OneToOne(optional = false, cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL)
     private Address mainAddress;
 
     private boolean active = true;
@@ -99,7 +99,15 @@ public class Person implements Serializable {
     }
 
     public void setMainAddress(Address newMainAddress) {
-        newMainAddress.setIsMain(true);
+
+        if(newMainAddress != null) {
+            newMainAddress.setIsMain(true);
+        }
+
+        if(this.mainAddress != null) {
+            this.mainAddress.setIsMain(false);
+        }
+
         this.mainAddress = newMainAddress;
     }
 

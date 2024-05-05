@@ -2,11 +2,8 @@ package com.github.thiagomarqs.gerenciamentopessoas.domain.usecase.address;
 
 import com.github.thiagomarqs.gerenciamentopessoas.domain.entity.Address;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.entity.Person;
-import com.github.thiagomarqs.gerenciamentopessoas.domain.exception.BusinessRuleException;
-import com.github.thiagomarqs.gerenciamentopessoas.domain.exception.messages.AddressBusinessRuleMessages;
-import com.github.thiagomarqs.gerenciamentopessoas.domain.exception.messages.PersonBusinessRuleMessages;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.repository.AddressRepository;
-import com.github.thiagomarqs.gerenciamentopessoas.validation.AddressValidator;
+import com.github.thiagomarqs.gerenciamentopessoas.domain.validator.usecase.address.EditAddressBusinessRuleValidator;
 import jakarta.inject.Inject;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.stereotype.Component;
@@ -16,13 +13,13 @@ public class EditAddress {
 
     private final AddressRepository addressRepository;
     private final FindAddresses findAddresses;
-    private final AddressValidator addressValidator;
+    private final EditAddressBusinessRuleValidator businessRuleValidator;
 
     @Inject
-    public EditAddress(AddressRepository addressRepository, FindAddresses findAddresses, AddressValidator addressValidator) {
+    public EditAddress(AddressRepository addressRepository, FindAddresses findAddresses, EditAddressBusinessRuleValidator businessRuleValidator) {
         this.addressRepository = addressRepository;
         this.findAddresses = findAddresses;
-        this.addressValidator = addressValidator;
+        this.businessRuleValidator = businessRuleValidator;
     }
 
     public Address edit(@NotNull Long addressId, @NotNull Address edited) {
@@ -30,46 +27,30 @@ public class EditAddress {
         var address = findAddresses.findOne(addressId);
         var person = address.getPerson();
 
-        throwIfInvalid(addressId, edited, person);
+        edited.setId(addressId);
+        edited.setPerson(person);
 
-        boolean isDeactivatingMainAddress = !edited.isActive() && person.getMainAddress().getId().equals(addressId);
-
-        if(isDeactivatingMainAddress) {
-            automaticallyChangeMainAddressToRemainingActiveAddress(addressId, person);
-        }
-
+        throwIfFailsValidation(edited);
+        automaticallyChangeMainAddressIfDeactivatingMainAddress(edited);
         updateAddressFields(edited, address);
 
         return addressRepository.save(address);
 
     }
 
-    private void throwIfInvalid(Long addressId, Address edited, Person person) {
-        throwIfInvalidWhenDeactivatingAddress(addressId, edited, person);
-        addressValidator.throwIfInvalidCep(edited);
+    private void throwIfFailsValidation(Address edited) {
+        businessRuleValidator
+                .validate(edited)
+                .throwIfHasErrors();
     }
 
-    private void throwIfInvalidWhenDeactivatingAddress(Long addressId, Address edited, Person person) {
-        boolean isTryingToDeactivateAddress = !edited.isActive();
-        boolean isPersonMainAddress = person.getMainAddress().getId().equals(addressId);
-        int addressCount = person.getAddresses().size();
-        boolean areAllOtherAddressesDeactivated = person.getAddresses()
-                .stream()
-                .filter(a -> !a.getId().equals(addressId))
-                .noneMatch(Address::isActive);
+    private void automaticallyChangeMainAddressIfDeactivatingMainAddress(Address edited) {
+        var person = edited.getPerson();
+        var addressId = edited.getId();
+        boolean isDeactivatingMainAddress = !edited.getActive() && person.getMainAddress().getId().equals(addressId);
 
-        if(isTryingToDeactivateAddress) {
-            if(isPersonMainAddress && addressCount > 2) {
-                throw new BusinessRuleException(AddressBusinessRuleMessages.CANT_DEACTIVATE_ADDRESS_WHEN_MORE_THAN_TWO_ADDRESSES_FORMATTED);
-            }
-
-            if(addressCount == 1) {
-                throw new BusinessRuleException(PersonBusinessRuleMessages.PERSON_HAS_ONLY_ONE_ADDRESS);
-            }
-
-            if(areAllOtherAddressesDeactivated) {
-                throw new BusinessRuleException(AddressBusinessRuleMessages.ONLY_ACTIVE_ADDRESS_FORMATTED);
-            }
+        if(isDeactivatingMainAddress) {
+            automaticallyChangeMainAddressToRemainingActiveAddress(addressId, person);
         }
     }
 
@@ -99,8 +80,8 @@ public class EditAddress {
         if (edited.getCity() != null) {
             address.setCity(edited.getCity());
         }
-        if (edited.isActive() != null) {
-            address.setActive(edited.isActive());
+        if (edited.getActive() != null) {
+            address.setActive(edited.getActive());
         }
     }
 }

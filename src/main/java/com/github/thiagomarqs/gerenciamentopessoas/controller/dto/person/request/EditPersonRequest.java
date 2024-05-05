@@ -1,20 +1,18 @@
-package com.github.thiagomarqs.gerenciamentopessoas.dto.person.request;
+package com.github.thiagomarqs.gerenciamentopessoas.controller.dto.person.request;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
+import jakarta.validation.constraints.Size;
 
 import java.time.LocalDate;
 
 public record EditPersonRequest(
-        @NotBlank
+
+        @Size(min = 3, max = 100)
         String fullName,
 
-        @NotNull
         @PastOrPresent
         LocalDate birthDate,
 
-        @NotNull
         boolean active
 ) {
 }

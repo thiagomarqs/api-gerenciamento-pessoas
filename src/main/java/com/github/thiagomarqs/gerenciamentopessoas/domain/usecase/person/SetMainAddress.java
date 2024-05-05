@@ -2,12 +2,9 @@ package com.github.thiagomarqs.gerenciamentopessoas.domain.usecase.person;
 
 import com.github.thiagomarqs.gerenciamentopessoas.domain.entity.Address;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.entity.Person;
-import com.github.thiagomarqs.gerenciamentopessoas.domain.exception.BusinessRuleException;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.exception.EntityNotFoundException;
-import com.github.thiagomarqs.gerenciamentopessoas.domain.exception.messages.AddressBusinessRuleMessages;
-import com.github.thiagomarqs.gerenciamentopessoas.domain.exception.messages.PersonBusinessRuleMessages;
-import com.github.thiagomarqs.gerenciamentopessoas.domain.repository.AddressRepository;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.repository.PersonRepository;
+import com.github.thiagomarqs.gerenciamentopessoas.domain.validator.usecase.person.SetMainAddressBusinessRuleValidator;
 import jakarta.inject.Inject;
 import org.springframework.stereotype.Component;
 
@@ -15,48 +12,39 @@ import org.springframework.stereotype.Component;
 public class SetMainAddress {
 
     private final PersonRepository personRepository;
-    private final AddressRepository addressRepository;
     private final FindPeople findPeople;
+    private final SetMainAddressBusinessRuleValidator businessRuleValidator;
 
     @Inject
-    public SetMainAddress(PersonRepository personRepository, AddressRepository addressRepository, FindPeople findPeople) {
+    public SetMainAddress(PersonRepository personRepository, FindPeople findPeople, SetMainAddressBusinessRuleValidator businessRuleValidator) {
         this.personRepository = personRepository;
-        this.addressRepository = addressRepository;
         this.findPeople = findPeople;
+        this.businessRuleValidator = businessRuleValidator;
     }
 
     public Person set(Long personId, Long newMainAddressId) {
 
         var person = findPeople.findOne(personId);
-        var newMainAddress = addressRepository.findById(newMainAddressId).orElseThrow(() -> EntityNotFoundException.of(newMainAddressId));
+        var newMainAddress = getNewMainAddress(newMainAddressId, person);
 
-        throwIfInactivePerson(person);
-        throwIfInactiveAddress(newMainAddress);
-        throwIfSomeoneElsesAddress(person, newMainAddress);
+        throwIfFailsValidation(person, newMainAddress);
 
         person.setMainAddress(newMainAddress);
 
         return personRepository.save(person);
     }
 
-    private void throwIfInactivePerson(Person person) {
-        if(!person.isActive()) {
-            throw new BusinessRuleException(String.format(PersonBusinessRuleMessages.PERSON_IS_INACTIVE_FORMATTED, person.getId()));
-        }
+    private void throwIfFailsValidation(Person person, Address newMainAddress) {
+        businessRuleValidator
+                .validate(person, newMainAddress)
+                .throwIfHasErrors();
     }
 
-    private void throwIfInactiveAddress(Address address) {
-        if(!address.isActive()) {
-            throw new BusinessRuleException(String.format(AddressBusinessRuleMessages.ADDRESS_IS_INACTIVE_FORMATTED, address.getAddress()));
-        }
-    }
-
-    private void throwIfSomeoneElsesAddress(Person person, Address address) {
-        boolean isSomeoneElsesAddress = address.getPerson() != null && !address.getPerson().equals(person);
-
-        if(isSomeoneElsesAddress) {
-            throw new BusinessRuleException(AddressBusinessRuleMessages.ADDRESS_BELONGS_TO_ANOTHER_USER);
-        }
+    private Address getNewMainAddress(Long newMainAddressId, Person person) {
+        return person.getAddresses()
+                .stream()
+                .filter(a -> a.getId().equals(newMainAddressId)).findFirst()
+                .orElseThrow(() -> EntityNotFoundException.of(newMainAddressId, Address.class));
     }
 
 }

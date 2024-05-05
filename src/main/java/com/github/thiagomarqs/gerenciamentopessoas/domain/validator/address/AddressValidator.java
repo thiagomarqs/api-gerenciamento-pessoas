@@ -1,8 +1,8 @@
-package com.github.thiagomarqs.gerenciamentopessoas.validation;
+package com.github.thiagomarqs.gerenciamentopessoas.domain.validator.address;
 
 import com.github.thiagomarqs.gerenciamentopessoas.domain.entity.Address;
-import com.github.thiagomarqs.gerenciamentopessoas.domain.exception.BusinessRuleException;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.exception.messages.AddressBusinessRuleMessages;
+import com.github.thiagomarqs.gerenciamentopessoas.domain.validator.ValidationResult;
 import com.github.thiagomarqs.gerenciamentopessoas.integration.address.AddressFinder;
 import jakarta.inject.Inject;
 import org.springframework.stereotype.Component;
@@ -41,21 +41,13 @@ public class AddressValidator {
         }
     }
 
-    public void throwIfInvalidCep(Address edited) {
+    public void validateInvalidCep(Address edited, ValidationResult result) {
         var cep = edited.getCep();
         var isValid = validateByCep(cep);
 
         if(!isValid) {
-            throw new BusinessRuleException(String.format(AddressBusinessRuleMessages.INVALID_CEPS_FORMATTED, cep));
-        }
-    }
-
-    public void throwIfSomeInvalidCep(List<Address> addresses) {
-        var addressValidationResult = validateAddressesCep(addresses);
-
-        if(addressValidationResult.hasFailures()) {
-            var invalidCeps = addressValidationResult.getInvalidCeps();
-            throw new BusinessRuleException(String.format(AddressBusinessRuleMessages.INVALID_CEPS_FORMATTED, invalidCeps.toString()));
+            var message = String.format(AddressBusinessRuleMessages.INVALID_CEPS_FORMATTED, cep);
+            result.addError(message);
         }
     }
 

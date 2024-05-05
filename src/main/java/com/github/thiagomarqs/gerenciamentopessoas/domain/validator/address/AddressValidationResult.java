@@ -1,4 +1,4 @@
-package com.github.thiagomarqs.gerenciamentopessoas.validation;
+package com.github.thiagomarqs.gerenciamentopessoas.domain.validator.address;
 
 import java.util.ArrayList;
 import java.util.List;

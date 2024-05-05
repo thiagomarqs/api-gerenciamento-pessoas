@@ -1,9 +1,9 @@
-package com.github.thiagomarqs.gerenciamentopessoas.dto.address.request;
+package com.github.thiagomarqs.gerenciamentopessoas.controller.dto.address.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 
-public record CreatePersonAddressRequest(
+public record AddAddressRequest(
 
         @NotBlank
         String address,
@@ -19,7 +19,5 @@ public record CreatePersonAddressRequest(
         String city,
 
         @NotBlank
-        String state,
-
-        Boolean isMain
+        String state
 ) { }

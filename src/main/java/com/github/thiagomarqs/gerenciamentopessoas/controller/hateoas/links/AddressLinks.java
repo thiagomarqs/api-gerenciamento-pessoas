@@ -1,4 +1,4 @@
-package com.github.thiagomarqs.gerenciamentopessoas.hateoas.links;
+package com.github.thiagomarqs.gerenciamentopessoas.controller.hateoas.links;
 
 import com.github.thiagomarqs.gerenciamentopessoas.controller.AddressController;
 import org.springframework.hateoas.Link;

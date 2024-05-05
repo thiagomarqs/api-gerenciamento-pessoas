@@ -1,4 +1,4 @@
-package com.github.thiagomarqs.gerenciamentopessoas.dto.address.response;
+package com.github.thiagomarqs.gerenciamentopessoas.controller.dto.address.response;
 
 public record AddressResponse(
     Long id,

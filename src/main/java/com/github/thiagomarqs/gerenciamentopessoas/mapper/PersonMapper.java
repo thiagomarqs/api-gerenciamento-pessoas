@@ -1,10 +1,10 @@
 package com.github.thiagomarqs.gerenciamentopessoas.mapper;
 
+import com.github.thiagomarqs.gerenciamentopessoas.controller.dto.person.request.CreatePersonRequest;
+import com.github.thiagomarqs.gerenciamentopessoas.controller.dto.person.request.EditPersonRequest;
+import com.github.thiagomarqs.gerenciamentopessoas.controller.dto.person.response.EditedPersonResponse;
+import com.github.thiagomarqs.gerenciamentopessoas.controller.dto.person.response.PersonResponse;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.entity.Person;
-import com.github.thiagomarqs.gerenciamentopessoas.dto.person.request.CreatePersonRequest;
-import com.github.thiagomarqs.gerenciamentopessoas.dto.person.request.EditPersonRequest;
-import com.github.thiagomarqs.gerenciamentopessoas.dto.person.response.EditedPersonResponse;
-import com.github.thiagomarqs.gerenciamentopessoas.dto.person.response.PersonResponse;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
