@@ -20,6 +20,7 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -54,7 +55,9 @@ public class PersonController {
         Long personId = response.id();
         var model = EntityModel.of(response, PersonLinks.individualPersonLinks(personId));
 
-        return ResponseEntity.created(model.getRequiredLink("self").toUri()).body(model);
+        URI newPersonUri = model.getRequiredLink("self").toUri();
+
+        return ResponseEntity.created(newPersonUri).body(model);
     }
 
     @Operation(

@@ -1,8 +1,6 @@
 package com.github.thiagomarqs.gerenciamentopessoas.domain.validator.address;
 
 import com.github.thiagomarqs.gerenciamentopessoas.domain.entity.Address;
-import com.github.thiagomarqs.gerenciamentopessoas.domain.exception.messages.AddressBusinessRuleMessages;
-import com.github.thiagomarqs.gerenciamentopessoas.domain.validator.ValidationResult;
 import com.github.thiagomarqs.gerenciamentopessoas.integration.address.AddressFinder;
 import jakarta.inject.Inject;
 import org.springframework.stereotype.Component;
@@ -31,23 +29,18 @@ public class AddressValidator {
         return result;
     }
 
+    public boolean validateCep(Address edited) {
+        var cep = edited.getCep();
+        return validateByCep(cep);
+    }
+
     public boolean validateByCep(String cep) {
         try {
-            var address = addressFinder.findAddressByCep(cep);
+            addressFinder.findAddressByCep(cep);
             return true;
         }
         catch (Exception e) {
             return false;
-        }
-    }
-
-    public void validateInvalidCep(Address edited, ValidationResult result) {
-        var cep = edited.getCep();
-        var isValid = validateByCep(cep);
-
-        if(!isValid) {
-            var message = String.format(AddressBusinessRuleMessages.INVALID_CEPS_FORMATTED, cep);
-            result.addError(message);
         }
     }
 

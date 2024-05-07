@@ -8,7 +8,7 @@ import java.util.function.Function;
 
 public class ValidationResult {
 
-    private List<String> errors = new ArrayList<>();
+    private final List<String> errors = new ArrayList<>();
 
     public void addError(String errorMessage) {
         this.errors.add(errorMessage);

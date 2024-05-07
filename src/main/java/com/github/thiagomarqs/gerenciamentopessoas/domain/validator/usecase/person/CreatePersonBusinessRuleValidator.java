@@ -3,6 +3,7 @@ package com.github.thiagomarqs.gerenciamentopessoas.domain.validator.usecase.per
 import com.github.thiagomarqs.gerenciamentopessoas.domain.entity.Address;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.entity.Person;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.exception.messages.AddressBusinessRuleMessages;
+import com.github.thiagomarqs.gerenciamentopessoas.domain.exception.messages.EntityBusinessRuleMessages;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.exception.messages.PersonBusinessRuleMessages;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.validator.ValidationResult;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.validator.address.AddressValidator;
@@ -14,7 +15,8 @@ import java.util.List;
 @Component
 public class CreatePersonBusinessRuleValidator {
 
-    private AddressValidator addressValidator;
+    private final ValidationResult result = new ValidationResult();
+    private final AddressValidator addressValidator;
 
     @Inject
     public CreatePersonBusinessRuleValidator(AddressValidator addressValidator) {
@@ -22,17 +24,30 @@ public class CreatePersonBusinessRuleValidator {
     }
 
     public ValidationResult validate(Person person) {
-        var result = new ValidationResult();
 
-        validateNoAddresses(person, result);
-        validateIfThereIsSomeInvalidCep(person, result);
-        validateMoreThanOneMainAddress(person, result);
-        validateIfCantSetMainAddressAutomatically(person, result);
+        var isNull = validateNull(person);
+
+        if(isNull) return result;
+
+        validateNoAddresses(person);
+        validateIfThereIsSomeInvalidCep(person);
+        validateMoreThanOneMainAddress(person);
+        validateIfCantSetMainAddressAutomatically(person);
 
         return result;
     }
 
-    private void validateIfThereIsSomeInvalidCep(Person person, ValidationResult result) {
+    private boolean validateNull(Person person) {
+        if(person == null) {
+            var message = String.format(EntityBusinessRuleMessages.NULL_ENTITY_FORMATTED_WITH_CLASS_NAME, Person.class.getSimpleName());
+            result.addError(message);
+            return true;
+        }
+
+        return false;
+    }
+
+    private void validateIfThereIsSomeInvalidCep(Person person) {
         List<Address> addresses = person.getAddresses();
         var addressValidationResult = addressValidator.validateAddressesCep(addresses);
 
@@ -43,7 +58,7 @@ public class CreatePersonBusinessRuleValidator {
         }
     }
 
-    private void validateMoreThanOneMainAddress(Person person, ValidationResult result) {
+    private void validateMoreThanOneMainAddress(Person person) {
         var addresses = person.getAddresses();
         var mainAddresses = addresses.stream().filter(a -> a.getIsMain() != null && a.getIsMain()).count();
 
@@ -53,14 +68,14 @@ public class CreatePersonBusinessRuleValidator {
         }
     }
 
-    private void validateNoAddresses(Person person, ValidationResult result) {
+    private void validateNoAddresses(Person person) {
         if(person.getAddresses().isEmpty()) {
             String message = PersonBusinessRuleMessages.CANT_CREATE_PERSON_WITHOUT_ADDRESS;
             result.addError(message);
         }
     }
 
-    private void validateIfCantSetMainAddressAutomatically(Person person, ValidationResult result) {
+    private void validateIfCantSetMainAddressAutomatically(Person person) {
         var hasMainAddress = person.hasMainAddress();
         var hasMoreThanOneAddress = person.getAddresses().size() > 1;
 

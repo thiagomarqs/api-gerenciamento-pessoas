@@ -23,9 +23,19 @@ public class EditAddressBusinessRuleValidator {
         var result = new ValidationResult();
 
         validateIfInvalidWhenDeactivatingAddress(edited, result);
-        addressValidator.validateInvalidCep(edited, result);
+        validateCep(edited, result);
 
         return result;
+    }
+
+    private void validateCep(Address edited, ValidationResult result) {
+        var isValid = addressValidator.validateCep(edited);
+        var cep = edited.getCep();
+
+        if(!isValid) {
+            var message = String.format(AddressBusinessRuleMessages.INVALID_CEPS_FORMATTED, cep);
+            result.addError(message);
+        }
     }
 
     private void validateIfInvalidWhenDeactivatingAddress(Address edited, ValidationResult result) {

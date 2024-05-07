@@ -42,15 +42,6 @@ class EditPersonTest {
                 .state(state)
                 .build();
 
-        var newAddress = Address.builder()
-                .id(2L)
-                .address("Avenida Teste")
-                .cep("87654321")
-                .active(true)
-                .city(city)
-                .state(state)
-                .build();
-
         String oldFullName = "Fulano de Tal";
         LocalDate oldBirthDate = LocalDate.of(1990, 1, 1);
 
@@ -66,15 +57,11 @@ class EditPersonTest {
         String newFullName = "Fulano Beltrano de Tal";
         LocalDate newBirthDate = LocalDate.of(2000, 2, 2);
 
-        // Address deletion or addition is done in another use case.
-        // Here, we are forcing a new address to be sure that the use case rejects the change and keeps the original one.
         var edited = Person.builder()
                 .id(personId)
                 .fullName(newFullName)
                 .active(true)
                 .birthDate(newBirthDate)
-                .address(newAddress)
-                .mainAddress(newAddress)
                 .build();
 
         when(findPeople.findOne(personId)).thenReturn(person);
@@ -107,6 +94,7 @@ class EditPersonTest {
                 .active(true)
                 .city(city)
                 .state(state)
+                .isMain(true)
                 .build();
 
         var address2 = Address.builder()
@@ -124,6 +112,7 @@ class EditPersonTest {
                 .active(true)
                 .birthDate(LocalDate.of(1990, 1, 1))
                 .address(address)
+                .address(address2)
                 .mainAddress(address)
                 .build();
 
@@ -132,21 +121,19 @@ class EditPersonTest {
                 .fullName("Fulano de Tal")
                 .active(false)
                 .birthDate(LocalDate.of(1990, 1, 1))
-                .address(address)
-                .mainAddress(address)
                 .build();
 
         when(findPeople.findOne(personId)).thenReturn(person);
 
         person.getAddresses().forEach(a -> {
-            assertTrue(a.isActive());
+            assertTrue(a.getActive());
             assertEquals(person, a.getPerson());
         });
 
         editPerson.edit(personId, edited);
 
         person.getAddresses().forEach(a -> {
-            assertFalse(a.isActive());
+            assertFalse(a.getActive());
             assertEquals(person, a.getPerson());
         });
 
@@ -164,6 +151,7 @@ class EditPersonTest {
                 .active(false)
                 .city(city)
                 .state(state)
+                .isMain(true)
                 .build();
 
         var address2 = Address.builder()
@@ -181,6 +169,7 @@ class EditPersonTest {
                 .active(false)
                 .birthDate(LocalDate.of(1990, 1, 1))
                 .address(address)
+                .address(address2)
                 .mainAddress(address)
                 .build();
 
@@ -195,15 +184,19 @@ class EditPersonTest {
 
         when(findPeople.findOne(personId)).thenReturn(person);
 
+        assertFalse(person.isActive());
+
         person.getAddresses().forEach(a -> {
-            assertFalse(a.isActive());
+            assertFalse(a.getActive());
             assertEquals(person, a.getPerson());
         });
 
         editPerson.edit(personId, edited);
 
+        assertTrue(person.isActive());
+
         person.getAddresses().forEach(a -> {
-            assertTrue(a.isActive());
+            assertTrue(a.getActive());
             assertEquals(person, a.getPerson());
         });
 

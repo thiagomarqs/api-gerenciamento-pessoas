@@ -24,14 +24,14 @@ public class RemoveAddress {
         this.businessRuleValidator = businessRuleValidator;
     }
 
-    public Person remove(Long personId, Long addressId) {
+    public void remove(Long personId, Long addressId) {
         var person = findPeople.findOne(personId);
 
         throwIfFailsValidation(addressId, person);
         deleteAddress(person, addressId);
         setMainAddressIfNecessary(person);
 
-        return personRepository.save(person);
+        personRepository.save(person);
     }
 
     private void throwIfFailsValidation(Long addressId, Person person) {

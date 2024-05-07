@@ -4,7 +4,8 @@ import com.github.thiagomarqs.gerenciamentopessoas.domain.entity.Address;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.entity.Person;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.exception.BusinessRuleException;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.repository.PersonRepository;
-import com.github.thiagomarqs.gerenciamentopessoas.validation.AddressValidator;
+import com.github.thiagomarqs.gerenciamentopessoas.domain.validator.ValidationResult;
+import com.github.thiagomarqs.gerenciamentopessoas.domain.validator.usecase.person.CreatePersonBusinessRuleValidator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -13,189 +14,78 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class CreatePersonTest {
 
+    private final String city = "Cidade Teste";
+    private final String state = "Estado Teste";
     @Mock
-    PersonRepository personRepository;
+    private PersonRepository personRepository;
 
     @Mock
-    AddressValidator addressValidator;
+    private CreatePersonBusinessRuleValidator businessRuleValidator;
 
     @InjectMocks
-    CreatePerson createPerson;
-
-    String state = "Estado Teste";
-    String city = "Cidade Teste";
+    private CreatePerson createPerson;
 
     @Test
-    void createPerson() {
+    void shouldCreatePersonWhenValidationPasses() {
 
         var address = Address.builder()
                 .address("Rua Teste")
                 .cep("12345678")
-                .number("123")
-                .state(state)
+                .number("999")
                 .city(city)
+                .state(state)
                 .isMain(true)
+                .active(true)
                 .build();
 
         var person = Person.builder()
                 .fullName("Fulano de Tal")
                 .birthDate(LocalDate.of(1990, 1, 1))
                 .address(address)
+                .mainAddress(address)
                 .build();
 
-        when(personRepository.save(person)).thenReturn(person);
-
-        createPerson.create(person);
-    }
-
-    @Test
-    void shouldThrowExceptionWhenNoMainAddressWasSetAndThereIsMoreThanOneAddress() {
-
-        var address = Address.builder()
-                .address("Rua Teste")
-                .cep("12345678")
-                .number("123")
-                .state(state)
-                .city(city)
-                .build();
-
-        var address2 = Address.builder()
-                .address("Rua Teste 2")
-                .cep("12345670")
-                .number("321")
-                .city(city)
-                .state(state)
-                .build();
-
-        var person = Person.builder()
-                .fullName("Fulano de Tal")
-                .birthDate(LocalDate.of(1990, 1, 1))
-                .address(address)
-                .address(address2)
-                .build();
-
-        assertFalse(address.getIsMain());
-        assertFalse(address2.getIsMain());
-
-        assertThrows(BusinessRuleException.class, () -> createPerson.create(person));
-        assertFalse(address.getIsMain());
-        assertFalse(address2.getIsMain());
-    }
-
-    @Test
-    void shouldSetMainAddressAutomaticallyWhenNoMainAddressIsTrySetAndThereIsOnlyOneAddress() {
-
-        var address = Address.builder()
-                .address("Rua Teste")
-                .cep("12345678")
-                .number("123")
-                .city(city)
-                .state(state)
-                .build();
-
-        var person = Person.builder()
-                .fullName("Fulano de Tal")
-                .birthDate(LocalDate.of(1990, 1, 1))
-                .address(address)
-                .build();
-
-        assertNull(person.getMainAddress());
-
+        when(businessRuleValidator.validate(person)).thenReturn(new ValidationResult());
         when(personRepository.save(person)).thenReturn(person);
 
         createPerson.create(person);
 
-        assertNotNull(person.getMainAddress());
-        assertTrue(address.getIsMain());
+        verify(personRepository).save(person);
     }
 
     @Test
-    void shouldThrowWhenCreatingPersonWithoutAddress() {
-
-        var person = Person.builder()
-                .fullName("Fulano de Tal")
-                .birthDate(LocalDate.of(1990, 1, 1))
-                .build();
-
-        assertThrows(BusinessRuleException.class, () -> createPerson.create(person));
-
-    }
-
-    @Test
-    void shouldThrowWhenMoreThanOneMainAddressWasSet() {
+    void shouldNotCreatePersonWhenValidationFails() {
 
         var address = Address.builder()
                 .address("Rua Teste")
                 .cep("12345678")
-                .number("123")
-                .state(state)
-                .city(city)
-                .isMain(true)
-                .build();
-
-        var address2 = Address.builder()
-                .address("Rua Teste 2")
-                .cep("12345670")
-                .number("321")
+                .number("999")
                 .city(city)
                 .state(state)
                 .isMain(true)
+                .active(true)
                 .build();
 
         var person = Person.builder()
                 .fullName("Fulano de Tal")
                 .birthDate(LocalDate.of(1990, 1, 1))
                 .address(address)
-                .address(address2)
+                .mainAddress(address)
                 .build();
 
-        assertTrue(address.getIsMain());
-        assertTrue(address2.getIsMain());
+        ValidationResult validationResult = new ValidationResult();
+        validationResult.addError("error");
 
-        assertThrows(BusinessRuleException.class, () -> createPerson.create(person));
-        assertNull(person.getMainAddress());
-
-    }
-
-    @Test
-    void shouldThrowWhenCreatingPersonWithMoreThanOneMainAddresses() {
-
-        var address = Address.builder()
-                .address("Rua Teste")
-                .cep("12345678")
-                .number("123")
-                .state(state)
-                .city(city)
-                .isMain(true)
-                .build();
-
-        var address2 = Address.builder()
-                .address("Rua Teste 2")
-                .cep("12345670")
-                .number("321")
-                .city(city)
-                .state(state)
-                .isMain(true)
-                .build();
-
-        var person = Person.builder()
-                .fullName("Fulano de Tal")
-                .birthDate(LocalDate.of(1990, 1, 1))
-                .address(address)
-                .address(address2)
-                .build();
-
-        assertTrue(address.getIsMain());
-        assertTrue(address2.getIsMain());
+        when(businessRuleValidator.validate(person)).thenReturn(validationResult);
 
         assertThrows(BusinessRuleException.class, () -> createPerson.create(person));
 
-        assertNull(person.getMainAddress());
+        verifyNoInteractions(personRepository);
     }
 }

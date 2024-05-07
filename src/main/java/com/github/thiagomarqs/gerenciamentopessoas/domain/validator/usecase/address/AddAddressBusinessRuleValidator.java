@@ -22,9 +22,19 @@ public class AddAddressBusinessRuleValidator {
         var result = new ValidationResult();
 
         validateDuplicatedAddress(newAddress, result);
-        addressValidator.validateInvalidCep(newAddress, result);
+        validateCep(newAddress, result);
 
         return result;
+    }
+
+    private void validateCep(Address edited, ValidationResult result) {
+        var isValid = addressValidator.validateCep(edited);
+        var cep = edited.getCep();
+
+        if(!isValid) {
+            var message = String.format(AddressBusinessRuleMessages.INVALID_CEPS_FORMATTED, cep);
+            result.addError(message);
+        }
     }
 
     private void validateDuplicatedAddress(Address newAddress, ValidationResult result) {

@@ -34,9 +34,9 @@ public class CreatePerson {
     }
 
     private void setMainAddress(Person person) {
-        var hasMainAddressAlreadyBeenChosen = person.hasMainAddress();
+        var hasMainAddressBeenChosenAlready = person.hasMainAddress();
 
-        if(!hasMainAddressAlreadyBeenChosen) {
+        if(!hasMainAddressBeenChosenAlready) {
             setAddressAutomatically(person);
             return;
         }
