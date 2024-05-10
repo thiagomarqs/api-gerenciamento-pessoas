@@ -25,7 +25,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/people")
-@Tag(name = "Pessoas", description = "Gerenciamento de pessoas")
+@Tag(name = "Pessoa", description = "Gerenciamento de pessoas")
 public class PersonController {
 
     private final CreatePerson createPerson;

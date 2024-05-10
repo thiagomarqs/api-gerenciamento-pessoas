@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/people")
-@Tag(name = "Endereços", description = "Gerenciamento dos endereços das pessoas")
+@Tag(name = "Endereço", description = "Gerenciamento dos endereços das pessoas")
 public class AddressController {
 
     private final SetMainAddress setMainAddress;
@@ -110,7 +110,7 @@ public class AddressController {
     @DeleteMapping("{personId}/addresses/{addressId}")
     public ResponseEntity<?> deleteAddress(@PathVariable("personId") @NotNull Long personId, @PathVariable("addressId") @NotNull Long addressId) {
         removeAddress.remove(personId, addressId);
-        return ResponseEntity.accepted().build();
+        return ResponseEntity.noContent().build();
     }
 
     @Operation(
@@ -149,7 +149,7 @@ public class AddressController {
     @PutMapping("{personId}/addresses/main")
     public ResponseEntity<?> setMainAddress(@PathVariable("personId") @NotNull Long personId, @RequestBody @NotNull @Valid NewMainAddressRequest request) {
         setMainAddress.set(personId, request.id());
-        return ResponseEntity.accepted().build();
+        return ResponseEntity.noContent().build();
     }
 
 }

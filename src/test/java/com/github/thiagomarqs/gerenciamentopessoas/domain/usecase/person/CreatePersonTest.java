@@ -22,6 +22,7 @@ class CreatePersonTest {
 
     private final String city = "Cidade Teste";
     private final String state = "Estado Teste";
+
     @Mock
     private PersonRepository personRepository;
 
