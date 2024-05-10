@@ -5,7 +5,9 @@ import com.github.thiagomarqs.gerenciamentopessoas.domain.entity.Person;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.exception.messages.AddressBusinessRuleMessages;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.exception.messages.PersonBusinessRuleMessages;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.validator.ValidationResult;
+import org.springframework.stereotype.Component;
 
+@Component
 public class SetMainAddressBusinessRuleValidator {
 
     public ValidationResult validate(Person person, Address newMainAddress) {

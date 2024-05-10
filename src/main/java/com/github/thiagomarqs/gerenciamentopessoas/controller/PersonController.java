@@ -48,7 +48,6 @@ public class PersonController {
     )
     @PostMapping
     public ResponseEntity<?> create(@RequestBody @Valid CreatePersonRequest request) {
-
         var person = personMapper.createPersonRequestToPerson(request);
         var saved = createPerson.create(person);
         var response = personMapper.personToPersonResponse(saved);
@@ -102,10 +101,10 @@ public class PersonController {
     ){
         List<Person> people;
 
-        if(request != null && request.ids() != null) {
+        if (request != null && request.ids() != null) {
             people = findPeople.findMany(request.ids());
         }
-        else if(active != null) {
+        else if (active != null) {
             people = findPeople.findAllByActive(active);
         }
         else {
@@ -124,8 +123,11 @@ public class PersonController {
             tags = { "Pessoa" }
     )
     @GetMapping("/fullName/{fullName}")
-    public ResponseEntity<?> getAllByFullNameLike(@PathVariable("fullName") @NotBlank String fullName){
+    public ResponseEntity<?> getAllByFullNameLike(@PathVariable("fullName") @NotBlank String fullName) {
         var people = findPeople.findAllByFullNameLike(fullName);
+
+        if(people.isEmpty()) return ResponseEntity.notFound().build();
+
         var response = personMapper.personListToPersonResponseList(people);
         var model = CollectionModel.of(response, PersonLinks.personCollectionLinks());
         return ResponseEntity.ok(model);
@@ -137,7 +139,7 @@ public class PersonController {
             tags = { "Pessoa" }
     )
     @GetMapping("/city/{city}")
-    public ResponseEntity<?> getAllByCity(@PathVariable("city") @NotBlank String city){
+    public ResponseEntity<?> getAllByCity(@PathVariable("city") @NotBlank String city) {
         var people = findPeople.findAllByAddressCity(city);
         var response = personMapper.personListToPersonResponseList(people);
         var model = CollectionModel.of(response, PersonLinks.personCollectionLinks());

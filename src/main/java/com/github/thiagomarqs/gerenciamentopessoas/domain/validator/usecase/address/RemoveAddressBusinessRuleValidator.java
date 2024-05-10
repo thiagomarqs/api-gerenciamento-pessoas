@@ -5,7 +5,9 @@ import com.github.thiagomarqs.gerenciamentopessoas.domain.exception.messages.Add
 import com.github.thiagomarqs.gerenciamentopessoas.domain.exception.messages.EntityBusinessRuleMessages;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.exception.messages.PersonBusinessRuleMessages;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.validator.ValidationResult;
+import org.springframework.stereotype.Component;
 
+@Component
 public class RemoveAddressBusinessRuleValidator {
 
     public ValidationResult validate(Long addressId, Person person) {

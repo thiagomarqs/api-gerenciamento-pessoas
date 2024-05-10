@@ -6,6 +6,7 @@ import com.github.thiagomarqs.gerenciamentopessoas.controller.dto.person.request
 import com.github.thiagomarqs.gerenciamentopessoas.controller.dto.person.request.EditPersonRequest;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.entity.Address;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.entity.Person;
+import com.github.thiagomarqs.gerenciamentopessoas.domain.exception.EntityNotFoundException;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.usecase.person.CreatePerson;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.usecase.person.EditPerson;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.usecase.person.FindPeople;
@@ -25,8 +26,7 @@ import java.util.Collections;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(PersonController.class)
@@ -130,4 +130,44 @@ class PersonControllerTest {
                         .content(json))
                 .andExpect(status().isOk());
     }
+
+    @Test
+    void shouldReturnStatusCode404WhenPersonIsNotFound() throws Exception {
+        Long personId = 1L;
+
+        when(findPeople.findOne(personId)).thenThrow(EntityNotFoundException.of(personId, Person.class));
+
+        mockMvc.perform(get("/api/people/" + personId))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void shouldReturnStatusCode500WhenGetAllThrowsException() throws Exception {
+        when(findPeople.findAll()).thenThrow(new RuntimeException());
+
+        mockMvc.perform(get("/api/people"))
+                .andExpect(status().isInternalServerError());
+    }
+
+    @Test
+    void shouldReturnStatusCode500WhenGetAllByFullNameLikeThrowsException() throws Exception {
+        String fullName = "Fulano de Tal";
+
+        when(findPeople.findAllByFullNameLike(fullName)).thenThrow(new RuntimeException());
+
+        mockMvc.perform(get("/api/people/fullName/" + fullName))
+                .andExpect(status().isInternalServerError());
+    }
+
+    @Test
+    void shouldReturnStatusCode500WhenGetAllByCityThrowsException() throws Exception {
+        String city = "Test City";
+
+        when(findPeople.findAllByAddressCity(city)).thenThrow(new RuntimeException());
+
+        mockMvc.perform(get("/api/people/city/" + city))
+                .andExpect(status().isInternalServerError());
+    }
+
+
 }

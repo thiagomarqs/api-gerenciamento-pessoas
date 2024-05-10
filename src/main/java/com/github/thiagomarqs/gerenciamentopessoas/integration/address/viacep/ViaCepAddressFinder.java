@@ -17,10 +17,19 @@ import java.net.http.HttpResponse;
 public class ViaCepAddressFinder implements AddressFinder {
 
     @Value("${addressfinder.endpoint.viacep}")
-    String viaCepEndpoint;
-    HttpClient httpClient = HttpClient.newHttpClient();
-    Gson gson = new Gson();
-    AddressMapper addressMapper = Mappers.getMapper(AddressMapper.class);
+    private String viaCepEndpoint;
+    private HttpClient httpClient = HttpClient.newHttpClient();
+    private Gson gson = new Gson();
+    private AddressMapper addressMapper = Mappers.getMapper(AddressMapper.class);
+
+    public ViaCepAddressFinder() {}
+
+    public ViaCepAddressFinder(String viaCepEndpoint) {
+        this.viaCepEndpoint = viaCepEndpoint;
+        this.httpClient = httpClient;
+        this.gson = gson;
+        this.addressMapper = addressMapper;
+    }
 
     @Override
     public AddressResult findAddressByCep(String cep) {

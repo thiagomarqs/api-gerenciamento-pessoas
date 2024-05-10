@@ -5,6 +5,7 @@ import com.github.thiagomarqs.gerenciamentopessoas.controller.dto.address.reques
 import com.github.thiagomarqs.gerenciamentopessoas.controller.dto.address.request.EditAddressRequest;
 import com.github.thiagomarqs.gerenciamentopessoas.controller.dto.address.request.NewMainAddressRequest;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.entity.Address;
+import com.github.thiagomarqs.gerenciamentopessoas.domain.exception.EntityNotFoundException;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.usecase.address.AddAddress;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.usecase.address.EditAddress;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.usecase.address.FindAddresses;
@@ -22,8 +23,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -111,6 +111,16 @@ class AddressControllerTest {
     }
 
     @Test
+    void shouldReturn404WhenAddressIsNotFound() throws Exception {
+
+        when(findAddresses.findOne(1L)).thenThrow(EntityNotFoundException.class);
+
+        mockMvc.perform(get("/api/people/1/addresses/1"))
+                .andExpect(status().isNotFound());
+
+    }
+
+    @Test
     void shouldReturnStatus204WhenMainAddressIsSetSuccessfully() throws Exception {
         var request = new NewMainAddressRequest(1L);
         var json = gson.toJson(request);
@@ -119,6 +129,59 @@ class AddressControllerTest {
                 .contentType("application/json")
                 .content(json))
                 .andExpect(status().isNoContent());
+    }
+
+    @Test
+    void shouldReturnStatusCode500WhenGetPersonAddressesThrowsException() throws Exception {
+        Long personId = 1L;
+
+        when(findAddresses.findAll(personId)).thenThrow(new RuntimeException());
+
+        mockMvc.perform(get("/api/people/" + personId + "/addresses"))
+                .andExpect(status().isInternalServerError());
+    }
+
+    @Test
+    void shouldReturnStatusCode500WhenGetAddressThrowsException() throws Exception {
+        Long personId = 1L;
+        Long addressId = 1L;
+
+        when(findAddresses.findOne(addressId)).thenThrow(new RuntimeException());
+
+        mockMvc.perform(get("/api/people/" + personId + "/addresses/" + addressId))
+                .andExpect(status().isInternalServerError());
+    }
+
+    @Test
+    void shouldReturnStatusCode500WhenGetAllByAddressLikeThrowsException() throws Exception {
+        Long personId = 1L;
+        String address = "Test Address";
+
+        when(findAddresses.findAllByAddressLike(personId, address)).thenThrow(new RuntimeException());
+
+        mockMvc.perform(get("/api/people/" + personId + "/addresses/address/" + address))
+                .andExpect(status().isInternalServerError());
+    }
+
+    @Test
+    void shouldReturnStatusCode500WhenGetMainAddressThrowsException() throws Exception {
+        Long personId = 1L;
+
+        when(findAddresses.findMainAddress(personId)).thenThrow(new RuntimeException());
+
+        mockMvc.perform(get("/api/people/" + personId + "/addresses/main"))
+                .andExpect(status().isInternalServerError());
+    }
+
+    @Test
+    void shouldReturnStatusCode500WhenDeleteAddressThrowsException() throws Exception {
+        Long personId = 1L;
+        Long addressId = 1L;
+
+        doThrow(new RuntimeException()).when(removeAddress).remove(personId, addressId);
+
+        mockMvc.perform(delete("/api/people/" + personId + "/addresses/" + addressId))
+                .andExpect(status().isInternalServerError());
     }
 
 }
