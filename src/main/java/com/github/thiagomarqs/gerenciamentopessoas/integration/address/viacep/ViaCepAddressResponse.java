@@ -1,6 +1,6 @@
 package com.github.thiagomarqs.gerenciamentopessoas.integration.address.viacep;
 
-public record ViaCepAddressResult(
+public record ViaCepAddressResponse(
     String cep,
     String logradouro,
     String complemento,

@@ -2,7 +2,6 @@ package com.github.thiagomarqs.gerenciamentopessoas.controller;
 
 import com.github.thiagomarqs.gerenciamentopessoas.controller.dto.person.request.CreatePersonRequest;
 import com.github.thiagomarqs.gerenciamentopessoas.controller.dto.person.request.EditPersonRequest;
-import com.github.thiagomarqs.gerenciamentopessoas.controller.dto.person.request.GetManyPeopleRequest;
 import com.github.thiagomarqs.gerenciamentopessoas.controller.hateoas.links.PersonLinks;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.entity.Person;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.usecase.person.CreatePerson;
@@ -21,7 +20,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/people")
@@ -97,12 +98,16 @@ public class PersonController {
     @GetMapping
     public ResponseEntity<?> getAll(
             @RequestParam(value = "active", required = false) Boolean active,
-            @RequestBody(required = false) @Valid GetManyPeopleRequest request
+            @RequestParam(value = "ids", required = false) String ids
     ){
         List<Person> people;
+        List<Long> idsList = Arrays
+                .stream(ids.trim().split(","))
+                .map(Long::valueOf)
+                .collect(Collectors.toList());
 
-        if (request != null && request.ids() != null) {
-            people = findPeople.findMany(request.ids());
+        if (!idsList.isEmpty()) {
+            people = findPeople.findMany(idsList);
         }
         else if (active != null) {
             people = findPeople.findAllByActive(active);

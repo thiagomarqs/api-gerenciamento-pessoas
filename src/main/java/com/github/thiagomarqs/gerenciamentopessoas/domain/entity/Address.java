@@ -2,7 +2,6 @@ package com.github.thiagomarqs.gerenciamentopessoas.domain.entity;
 
 import jakarta.persistence.*;
 
-import java.beans.ConstructorProperties;
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -31,7 +30,6 @@ public class Address implements Serializable {
         this.isMain = isMain;
     }
 
-    @ConstructorProperties({"id", "address", "cep", "number", "city", "state", "person", "active"})
     public Address(Long id, String address, String cep, String number, String city, String state, Person person, boolean active, boolean isMain) {
         this.id = id;
         this.address = address;

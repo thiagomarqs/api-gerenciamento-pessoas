@@ -143,4 +143,81 @@ class RemoveAddressBusinessRuleValidatorTest {
 
         assertTrue(validationResult.hasErrors());
     }
+
+    @Test
+    void shouldPassWhenRemovingMainAddressAndRemainingAddressIsActive() {
+        var mainAddress = Address.builder()
+                .id(1L)
+                .address("Rua Teste")
+                .cep("12345678")
+                .number("999")
+                .city(city)
+                .state(state)
+                .active(true)
+                .isMain(true)
+                .build();
+
+        var secondaryAddress = Address.builder()
+                .id(2L)
+                .address("Avenida Teste")
+                .cep("87654321")
+                .number("111")
+                .city(city)
+                .state(state)
+                .active(true)
+                .isMain(false)
+                .build();
+
+        var person = Person.builder()
+                .id(1L)
+                .fullName("Fulano de Tal")
+                .address(mainAddress)
+                .address(secondaryAddress)
+                .mainAddress(mainAddress)
+                .birthDate(LocalDate.of(1990, 1, 1))
+                .build();
+
+        var validationResult = businessRuleValidator.validate(mainAddress.getId(), person);
+
+        assertFalse(validationResult.hasErrors());
+    }
+
+    @Test
+    void shouldFailWhenRemovingMainAddressAndRemainingAddressIsNotActive() {
+        var mainAddress = Address.builder()
+                .id(1L)
+                .address("Rua Teste")
+                .cep("12345678")
+                .number("999")
+                .city(city)
+                .state(state)
+                .active(true)
+                .isMain(true)
+                .build();
+
+        var secondaryAddress = Address.builder()
+                .id(2L)
+                .address("Avenida Teste")
+                .cep("87654321")
+                .number("111")
+                .city(city)
+                .state(state)
+                .active(false)
+                .isMain(false)
+                .build();
+
+        var person = Person.builder()
+                .id(1L)
+                .fullName("Fulano de Tal")
+                .address(mainAddress)
+                .address(secondaryAddress)
+                .mainAddress(mainAddress)
+                .birthDate(LocalDate.of(1990, 1, 1))
+                .build();
+
+        var validationResult = businessRuleValidator.validate(mainAddress.getId(), person);
+
+        assertTrue(validationResult.hasErrors());
+    }
+
 }

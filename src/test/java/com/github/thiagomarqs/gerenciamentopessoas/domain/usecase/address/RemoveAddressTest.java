@@ -16,6 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
@@ -118,5 +119,49 @@ class RemoveAddressTest {
         assertThrows(BusinessRuleException.class, () -> removeAddress.remove(1L, address.getId()));
 
         verifyNoInteractions(addressRepository);
+    }
+
+    @Test
+    void shouldSetRemainingActiveAddressAsMainWhenMainAddressIsRemoved() {
+        var mainAddress = Address.builder()
+                .id(1L)
+                .address("Main Address")
+                .cep("12345678")
+                .number("999")
+                .city(city)
+                .state(state)
+                .active(true)
+                .isMain(true)
+                .build();
+
+        var secondaryAddress = Address.builder()
+                .id(2L)
+                .address("Secondary Address")
+                .cep("87654321")
+                .number("111")
+                .city("Secondary City")
+                .state("Secondary State")
+                .active(true)
+                .isMain(false)
+                .build();
+
+        var person = Person.builder()
+                .id(1L)
+                .fullName("Fulano de Tal")
+                .address(mainAddress)
+                .address(secondaryAddress)
+                .mainAddress(mainAddress)
+                .birthDate(LocalDate.of(1990, 1, 1))
+                .build();
+
+        mainAddress.setPerson(person);
+        secondaryAddress.setPerson(person);
+
+        when(findPeople.findOne(1L)).thenReturn(person);
+        when(businessRuleValidator.validate(mainAddress.getId(), person)).thenReturn(new ValidationResult());
+
+        removeAddress.remove(1L, mainAddress.getId());
+
+        assertEquals(secondaryAddress, person.getMainAddress());
     }
 }

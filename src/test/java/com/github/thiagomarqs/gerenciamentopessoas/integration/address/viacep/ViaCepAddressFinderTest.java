@@ -1,11 +1,11 @@
 package com.github.thiagomarqs.gerenciamentopessoas.integration.address.viacep;
 
-import com.github.thiagomarqs.gerenciamentopessoas.integration.address.AddressResult;
+import com.github.thiagomarqs.gerenciamentopessoas.integration.address.AddressIntegrationResult;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 class ViaCepAddressFinderTest {
 
@@ -18,21 +18,35 @@ class ViaCepAddressFinderTest {
     }
 
     @Test
-    void shouldReturnAddressResultWhenCepIsValid() throws Exception {
+    void shouldReturnAddressResponseWhenCepIsValid() throws Exception {
         String cep = "01014-030";
 
-        AddressResult result = viaCepAddressFinder.findAddressByCep(cep);
+        AddressIntegrationResult result = viaCepAddressFinder.findAddressByCep(cep);
+        var response = result.getResponse();
 
-        assertEquals("Viaduto Boa Vista", result.address());
-        assertEquals("01014-030", result.cep());
-        assertEquals("São Paulo", result.city());
-        assertEquals("SP", result.state());
+        assertEquals("Viaduto Boa Vista", response.address());
+        assertEquals("01014-030", response.cep());
+        assertEquals("São Paulo", response.city());
+        assertEquals("SP", response.state());
     }
 
     @Test
-    void shouldThrowExceptionWhenCepIsInvalid() throws Exception {
+    void shouldFailWhenCepDoesNotExist() throws Exception {
         String cep = "99999-999";
 
-        assertThrows(RuntimeException.class, () -> viaCepAddressFinder.findAddressByCep(cep));
+        var result = viaCepAddressFinder.findAddressByCep(cep);
+
+        assertFalse(result.getIsSuccessful());
+        assertFalse(result.getErrorMessages().isEmpty());
+    }
+
+    @Test
+    void shouldFailWhenCepPatternIsInvalid() throws Exception {
+        String cep = "99999999";
+
+        var result = viaCepAddressFinder.findAddressByCep(cep);
+
+        assertFalse(result.getIsSuccessful());
+        assertFalse(result.getErrorMessages().isEmpty());
     }
 }

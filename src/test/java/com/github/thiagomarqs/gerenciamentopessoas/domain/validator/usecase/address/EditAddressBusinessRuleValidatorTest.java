@@ -59,7 +59,7 @@ class EditAddressBusinessRuleValidatorTest {
                 .mainAddress(edited)
                 .build();
 
-        when(addressValidator.validateCep(edited)).thenReturn(true);
+        when(addressValidator.validateOneByCep(edited)).thenReturn(true);
 
         var validationResult = businessRuleValidator.validate(edited);
 
@@ -109,7 +109,7 @@ class EditAddressBusinessRuleValidatorTest {
                 .mainAddress(edited)
                 .build();
 
-        when(addressValidator.validateCep(edited)).thenReturn(true);
+        when(addressValidator.validateOneByCep(edited)).thenReturn(true);
 
         var validationResult = businessRuleValidator.validate(edited);
 
@@ -159,7 +159,7 @@ class EditAddressBusinessRuleValidatorTest {
                 .mainAddress(address3)
                 .build();
 
-        when(addressValidator.validateCep(edited)).thenReturn(true);
+        when(addressValidator.validateOneByCep(edited)).thenReturn(true);
 
         var validationResult = businessRuleValidator.validate(edited);
 
@@ -209,7 +209,7 @@ class EditAddressBusinessRuleValidatorTest {
                 .mainAddress(edited)
                 .build();
 
-        when(addressValidator.validateCep(edited)).thenReturn(true);
+        when(addressValidator.validateOneByCep(edited)).thenReturn(true);
 
         var validationResult = businessRuleValidator.validate(edited);
 

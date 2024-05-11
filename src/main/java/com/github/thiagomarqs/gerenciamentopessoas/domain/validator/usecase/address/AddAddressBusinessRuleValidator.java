@@ -28,7 +28,7 @@ public class AddAddressBusinessRuleValidator {
     }
 
     private void validateCep(Address edited, ValidationResult result) {
-        var isValid = addressValidator.validateCep(edited);
+        var isValid = addressValidator.validateOneByCep(edited);
         var cep = edited.getCep();
 
         if(!isValid) {

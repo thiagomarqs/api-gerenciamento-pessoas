@@ -42,7 +42,7 @@ class AddAddressBusinessRuleValidatorTest {
 
         newAddress.setPerson(person);
 
-        when(addressValidator.validateCep(newAddress)).thenReturn(true);
+        when(addressValidator.validateOneByCep(newAddress)).thenReturn(true);
 
         var validationResult = businessRuleValidator.validate(newAddress);
 
@@ -77,7 +77,7 @@ class AddAddressBusinessRuleValidatorTest {
 
         newAddress.setPerson(person);
 
-        when(addressValidator.validateCep(newAddress)).thenReturn(true);
+        when(addressValidator.validateOneByCep(newAddress)).thenReturn(true);
 
         var validationResult = businessRuleValidator.validate(newAddress);
 
@@ -102,7 +102,7 @@ class AddAddressBusinessRuleValidatorTest {
 
         newAddress.setPerson(person);
 
-        when(addressValidator.validateCep(newAddress)).thenReturn(false);
+        when(addressValidator.validateOneByCep(newAddress)).thenReturn(false);
 
         var validationResult = businessRuleValidator.validate(newAddress);
 

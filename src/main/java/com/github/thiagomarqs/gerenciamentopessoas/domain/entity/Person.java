@@ -2,7 +2,6 @@ package com.github.thiagomarqs.gerenciamentopessoas.domain.entity;
 
 import jakarta.persistence.*;
 
-import java.beans.ConstructorProperties;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -37,7 +36,6 @@ public class Person implements Serializable {
         this.mainAddress = mainAddress;
     }
 
-    @ConstructorProperties({"id", "fullName", "birthDate", "addresses", "mainAddress", "active"})
     public Person(Long id, String fullName, LocalDate birthDate, List<Address> addresses, Address mainAddress, boolean active) {
         this.id = id;
         this.fullName = fullName;

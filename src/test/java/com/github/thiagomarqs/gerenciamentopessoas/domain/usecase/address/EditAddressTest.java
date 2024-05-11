@@ -14,6 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
@@ -109,5 +110,62 @@ class EditAddressTest {
         assertThrows(BusinessRuleException.class, () -> editAddress.edit(1L, edited));
 
         verifyNoInteractions(addressRepository);
+    }
+
+    @Test
+    void shouldAutomaticallyChangeMainAddressWhenDeactivatingCurrentMainAddress() {
+        var mainAddress = Address.builder()
+                .id(1L)
+                .address("Rua teste")
+                .cep("12345678")
+                .number("999")
+                .city(city)
+                .state(state)
+                .active(true)
+                .isMain(true)
+                .build();
+
+        var secondaryAddress = Address.builder()
+                .id(2L)
+                .address("Avenida Teste")
+                .cep("87654321")
+                .number("111")
+                .city(city)
+                .state(state)
+                .active(true)
+                .isMain(false)
+                .build();
+
+        var person = Person.builder()
+                .id(1L)
+                .fullName("Fulano de Tal")
+                .address(mainAddress)
+                .address(secondaryAddress)
+                .mainAddress(mainAddress)
+                .birthDate(LocalDate.of(1990, 1, 1))
+                .build();
+
+        mainAddress.setPerson(person);
+        secondaryAddress.setPerson(person);
+
+        var editedMainAddress = Address.builder()
+                .id(1L)
+                .address("Main Address")
+                .cep("12345678")
+                .number("999")
+                .city(city)
+                .state(state)
+                .active(false)
+                .isMain(true)
+                .build();
+
+        when(findAddresses.findOne(1L)).thenReturn(mainAddress);
+        when(businessRuleValidator.validate(editedMainAddress)).thenReturn(new ValidationResult());
+        when(addressRepository.save(mainAddress)).thenReturn(mainAddress);
+
+        editAddress.edit(1L, editedMainAddress);
+
+        verify(addressRepository).save(mainAddress);
+        assertEquals(secondaryAddress, person.getMainAddress());
     }
 }

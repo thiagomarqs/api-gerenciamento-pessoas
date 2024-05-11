@@ -14,7 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -88,5 +88,34 @@ class CreatePersonTest {
         assertThrows(BusinessRuleException.class, () -> createPerson.create(person));
 
         verifyNoInteractions(personRepository);
+    }
+
+    @Test
+    void shouldAutomaticallySetMainAddressIfNotSetAlready() {
+
+            var address = Address.builder()
+                    .address("Rua Teste")
+                    .cep("12345678")
+                    .number("999")
+                    .city(city)
+                    .state(state)
+                    .active(true)
+                    .build();
+
+            var person = Person.builder()
+                    .fullName("Fulano de Tal")
+                    .birthDate(LocalDate.of(1990, 1, 1))
+                    .address(address)
+                    .build();
+
+            when(businessRuleValidator.validate(person)).thenReturn(new ValidationResult());
+            when(personRepository.save(person)).thenReturn(person);
+
+            createPerson.create(person);
+
+            assertTrue(person.hasMainAddress());
+            assertEquals(address, person.getMainAddress());
+
+            verify(personRepository).save(person);
     }
 }

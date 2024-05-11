@@ -13,12 +13,17 @@ public class AddressValidator {
     @Inject
     AddressFinder addressFinder;
 
-    public AddressValidationResult validateAddressesCep(List<Address> addresses) {
+    public AddressValidationResult validateManyByCep(List<Address> addresses) {
         var ceps = addresses.stream().map(Address::getCep).toArray(String[]::new);
-        return validateManyByCep(ceps);
+        return validateManyCeps(ceps);
     }
 
-    public AddressValidationResult validateManyByCep(String[] ceps) {
+    public boolean validateOneByCep(Address edited) {
+        var cep = edited.getCep();
+        return validateByCep(cep);
+    }
+
+    private AddressValidationResult validateManyCeps(String[] ceps) {
         var result = new AddressValidationResult();
 
         for (var cep : ceps) {
@@ -29,19 +34,14 @@ public class AddressValidator {
         return result;
     }
 
-    public boolean validateCep(Address edited) {
-        var cep = edited.getCep();
-        return validateByCep(cep);
+    private boolean validateByCep(String cep) {
+        var isPatternValid = validateCepPattern(cep);
+        var finderResult = addressFinder.findAddressByCep(cep);
+        return finderResult.getIsSuccessful() && isPatternValid;
     }
 
-    public boolean validateByCep(String cep) {
-        try {
-            addressFinder.findAddressByCep(cep);
-            return true;
-        }
-        catch (Exception e) {
-            return false;
-        }
+    private boolean validateCepPattern(String cep) {
+        return cep.matches("\\d{5}-\\d{3}");
     }
 
 }

@@ -49,7 +49,7 @@ public class CreatePersonBusinessRuleValidator {
 
     private void validateIfThereIsSomeInvalidCep(Person person) {
         List<Address> addresses = person.getAddresses();
-        var addressValidationResult = addressValidator.validateAddressesCep(addresses);
+        var addressValidationResult = addressValidator.validateManyByCep(addresses);
 
         if(addressValidationResult.hasFailures()) {
             var invalidCeps = addressValidationResult.getInvalidCeps();

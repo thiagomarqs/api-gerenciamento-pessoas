@@ -2,8 +2,11 @@ package com.github.thiagomarqs.gerenciamentopessoas.controller;
 
 import com.github.thiagomarqs.gerenciamentopessoas.config.gson.GsonConfig;
 import com.github.thiagomarqs.gerenciamentopessoas.controller.dto.address.request.CreatePersonAddressRequest;
+import com.github.thiagomarqs.gerenciamentopessoas.controller.dto.address.response.AddressResponse;
 import com.github.thiagomarqs.gerenciamentopessoas.controller.dto.person.request.CreatePersonRequest;
 import com.github.thiagomarqs.gerenciamentopessoas.controller.dto.person.request.EditPersonRequest;
+import com.github.thiagomarqs.gerenciamentopessoas.controller.dto.person.response.EditedPersonResponse;
+import com.github.thiagomarqs.gerenciamentopessoas.controller.dto.person.response.PersonResponse;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.entity.Address;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.entity.Person;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.exception.EntityNotFoundException;
@@ -22,6 +25,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.Collections;
 
 import static org.mockito.Mockito.mock;
@@ -96,7 +100,7 @@ class PersonControllerTest {
 
         when(personMapper.createPersonRequestToPerson(request)).thenReturn(person);
         when(createPerson.create(person)).thenReturn(person);
-        when(personMapper.personToPersonResponse(person)).thenReturn(mock());
+        when(personMapper.personToPersonResponse(person)).thenReturn(new PersonResponse(1L, fullName, birthDate.toString(), mock(AddressResponse.class), Collections.emptyList(), true));
 
         mockMvc.perform(post("/api/people")
                 .contentType("application/json")
@@ -123,7 +127,7 @@ class PersonControllerTest {
 
         when(personMapper.editPersonRequestToPerson(request)).thenReturn(person);
         when(editPerson.edit(personId, person)).thenReturn(person);
-        when(personMapper.personToEditedPersonResponse(person)).thenReturn(mock());
+        when(personMapper.personToEditedPersonResponse(person)).thenReturn(new EditedPersonResponse(personId, fullName, birthDate.toString(), false));
 
         mockMvc.perform(patch("/api/people/" + personId)
                         .contentType("application/json")
@@ -167,6 +171,16 @@ class PersonControllerTest {
 
         mockMvc.perform(get("/api/people/city/" + city))
                 .andExpect(status().isInternalServerError());
+    }
+
+    @Test
+    void shouldReturnStatusCode200AndEmptyListWhenGetAllIsCalledWithIdsButNoPersonIsFound() throws Exception {
+        var ids = Arrays.asList(1L, 2L, 3L);
+
+        when(findPeople.findMany(ids)).thenReturn(Collections.emptyList());
+
+        mockMvc.perform(get("/api/people?ids=1,2,3"))
+                .andExpect(status().isOk());
     }
 
 

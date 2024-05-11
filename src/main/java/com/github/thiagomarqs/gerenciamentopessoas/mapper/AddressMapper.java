@@ -5,8 +5,8 @@ import com.github.thiagomarqs.gerenciamentopessoas.controller.dto.address.reques
 import com.github.thiagomarqs.gerenciamentopessoas.controller.dto.address.request.EditAddressRequest;
 import com.github.thiagomarqs.gerenciamentopessoas.controller.dto.address.response.AddressResponse;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.entity.Address;
-import com.github.thiagomarqs.gerenciamentopessoas.integration.address.AddressResult;
-import com.github.thiagomarqs.gerenciamentopessoas.integration.address.viacep.ViaCepAddressResult;
+import com.github.thiagomarqs.gerenciamentopessoas.integration.address.AddressIntegrationResponse;
+import com.github.thiagomarqs.gerenciamentopessoas.integration.address.viacep.ViaCepAddressResponse;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -37,7 +37,7 @@ public interface AddressMapper {
     @Mapping(target = "state", source = "uf" )
     @Mapping(target = "uf", source = "uf")
     @Mapping(target = "number", ignore = true)
-    AddressResult viaCepAddressResultToAddressResult(ViaCepAddressResult viaCepAddressResult);
+    AddressIntegrationResponse viaCepAddressResponseToAddressIntegrationResponse(ViaCepAddressResponse viaCepAddressResponse);
 
     List<AddressResponse> addressListToAddressResponseList(List<Address> addresses);
 

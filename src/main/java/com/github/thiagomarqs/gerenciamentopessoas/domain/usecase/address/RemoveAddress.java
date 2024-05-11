@@ -46,7 +46,7 @@ public class RemoveAddress {
             person.setMainAddress(null);
         }
 
-        person.getAddresses().removeIf(a -> a.getId().equals(addressId));
+        person.removeAddress(addressId);
 
         addressRepository.deleteById(addressId);
     }

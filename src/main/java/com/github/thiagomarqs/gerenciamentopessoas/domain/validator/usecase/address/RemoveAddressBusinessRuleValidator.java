@@ -1,5 +1,6 @@
 package com.github.thiagomarqs.gerenciamentopessoas.domain.validator.usecase.address;
 
+import com.github.thiagomarqs.gerenciamentopessoas.domain.entity.Address;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.entity.Person;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.exception.messages.AddressBusinessRuleMessages;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.exception.messages.EntityBusinessRuleMessages;
@@ -17,8 +18,21 @@ public class RemoveAddressBusinessRuleValidator {
         validateAddressDoesNotExist(addressId, person, result);
         validateOnlyAddress(person, result);
         validateIfTryingToRemoveMainAddressAndPersonHasMoreThanTwoAddresses(addressId, person, result);
+        validateIfTryingToRemoveMainAddressButTheOnlyRemainingAddressIsNotActive(addressId, person, result);
 
         return result;
+    }
+
+    private void validateIfTryingToRemoveMainAddressButTheOnlyRemainingAddressIsNotActive(Long addressId, Person person, ValidationResult result) {
+        boolean isTryingToRemoveMainAddress = person.getMainAddress().getId().equals(addressId);
+        var addresses = person.getAddresses();
+        boolean hasOnlyTwoAddresses = addresses.size() == 2;
+        boolean isTheOnlyRemainingAddressInactive = addresses.stream().filter(a -> !a.getId().equals(addressId)).noneMatch(Address::getActive);
+
+        if(isTryingToRemoveMainAddress && hasOnlyTwoAddresses && isTheOnlyRemainingAddressInactive) {
+            var message = AddressBusinessRuleMessages.CANT_REMOVE_MAIN_ADDRESS_WHEN_ONLY_REMAINING_ADDRESS_IS_NOT_ACTIVE;
+            result.addError(message);
+        }
     }
 
     private void validateIfTryingToRemoveMainAddressAndPersonHasMoreThanTwoAddresses(Long addressId, Person person, ValidationResult result) {

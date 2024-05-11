@@ -64,7 +64,7 @@ class CreatePersonBusinessRuleValidatorTest {
         assertFalse(address.getIsMain());
         assertFalse(address2.getIsMain());
 
-        when(addressValidator.validateAddressesCep(any())).thenReturn(new AddressValidationResult());
+        when(addressValidator.validateManyByCep(any())).thenReturn(new AddressValidationResult());
         var validationResult = businessRuleValidator.validate(person);
 
         assertTrue(validationResult.hasErrors());
@@ -87,7 +87,7 @@ class CreatePersonBusinessRuleValidatorTest {
                 .address(address)
                 .build();
 
-        when(addressValidator.validateAddressesCep(any())).thenReturn(new AddressValidationResult());
+        when(addressValidator.validateManyByCep(any())).thenReturn(new AddressValidationResult());
         var validationResult = businessRuleValidator.validate(person);
 
         assertFalse(validationResult.hasErrors());
@@ -101,7 +101,7 @@ class CreatePersonBusinessRuleValidatorTest {
                 .birthDate(LocalDate.of(1990, 1, 1))
                 .build();
 
-        when(addressValidator.validateAddressesCep(any())).thenReturn(new AddressValidationResult());
+        when(addressValidator.validateManyByCep(any())).thenReturn(new AddressValidationResult());
         var validationResult = businessRuleValidator.validate(person);
 
         assertTrue(validationResult.hasErrors());
@@ -135,7 +135,7 @@ class CreatePersonBusinessRuleValidatorTest {
                 .address(address2)
                 .build();
 
-        when(addressValidator.validateAddressesCep(any())).thenReturn(new AddressValidationResult());
+        when(addressValidator.validateManyByCep(any())).thenReturn(new AddressValidationResult());
         var validationResult = businessRuleValidator.validate(person);
 
         assertTrue(validationResult.hasErrors());
