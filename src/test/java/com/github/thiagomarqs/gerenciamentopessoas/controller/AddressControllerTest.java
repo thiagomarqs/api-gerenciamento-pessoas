@@ -4,7 +4,9 @@ import com.github.thiagomarqs.gerenciamentopessoas.config.gson.GsonConfig;
 import com.github.thiagomarqs.gerenciamentopessoas.controller.dto.address.request.AddAddressRequest;
 import com.github.thiagomarqs.gerenciamentopessoas.controller.dto.address.request.EditAddressRequest;
 import com.github.thiagomarqs.gerenciamentopessoas.controller.dto.address.request.NewMainAddressRequest;
+import com.github.thiagomarqs.gerenciamentopessoas.controller.dto.address.response.AddressResponse;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.entity.Address;
+import com.github.thiagomarqs.gerenciamentopessoas.domain.exception.BusinessRuleException;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.exception.EntityNotFoundException;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.usecase.address.AddAddress;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.usecase.address.EditAddress;
@@ -184,4 +186,30 @@ class AddressControllerTest {
                 .andExpect(status().isInternalServerError());
     }
 
+    @Test
+    void shouldReturnStatusCode400WhenBusinessRuleException() throws Exception {
+
+        var request = new AddAddressRequest("Rua Teste", "12345-678", "123", city, state);
+        var address = Address.builder()
+                .address("Rua Teste")
+                .cep("12345-678")
+                .number("123")
+                .city(city)
+                .state(state)
+                .isMain(false)
+                .build();
+        var json = gson.toJson(request);
+
+        when(addressMapper.addAddressRequestToAddress(request)).thenReturn(address);
+        when(addAddress.add(1L, address)).thenThrow(BusinessRuleException.class);
+        when(addressMapper.addressToAddressResponse(address)).thenReturn(new AddressResponse(1L, "Rua Teste", "12345-678", "123", city, state, true, false));
+
+        mockMvc.perform(post("/api/people/1/addresses")
+                        .contentType("application/json")
+                        .content(json))
+                .andExpect(status().isBadRequest());
+
+        verify(addAddress).add(1L, address);
+
+    }
 }

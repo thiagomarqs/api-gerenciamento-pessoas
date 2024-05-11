@@ -119,7 +119,7 @@ public class Address implements Serializable {
     }
 
     public void setIsMain(Boolean main) {
-        isMain = (main == null) ? false : main;
+        isMain = main != null && main;
     }
 
     public static class Builder {

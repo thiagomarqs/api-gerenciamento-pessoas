@@ -15,6 +15,10 @@ public class GsonConfig {
         return new TypeAdapter<>() {
             @Override
             public void write(JsonWriter jsonWriter, LocalDate localDate) throws IOException {
+                if(localDate == null) {
+                    jsonWriter.value("");
+                    return;
+                }
                 jsonWriter.value(localDate.format(DateTimeFormatter.ISO_LOCAL_DATE));
             }
 

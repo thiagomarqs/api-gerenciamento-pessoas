@@ -44,11 +44,6 @@ public final class AddressIntegrationResult {
             return this;
         }
 
-        public Builder errorMessage(String errorMessage) {
-            addressIntegrationResult.addErrorMessage(errorMessage);
-            return this;
-        }
-
         public Builder errorMessages(List<String> errorMessages) {
             addressIntegrationResult.errorMessages = errorMessages;
             return this;
@@ -63,10 +58,6 @@ public final class AddressIntegrationResult {
             return addressIntegrationResult;
         }
 
-    }
-
-    public void addErrorMessage(String errorMessage) {
-        this.errorMessages.add(errorMessage);
     }
 
     public boolean getIsSuccessful() {

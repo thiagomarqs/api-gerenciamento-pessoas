@@ -9,6 +9,7 @@ import com.github.thiagomarqs.gerenciamentopessoas.controller.dto.person.respons
 import com.github.thiagomarqs.gerenciamentopessoas.controller.dto.person.response.PersonResponse;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.entity.Address;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.entity.Person;
+import com.github.thiagomarqs.gerenciamentopessoas.domain.exception.BusinessRuleException;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.exception.EntityNotFoundException;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.usecase.person.CreatePerson;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.usecase.person.EditPerson;
@@ -28,8 +29,7 @@ import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Collections;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -183,5 +183,47 @@ class PersonControllerTest {
                 .andExpect(status().isOk());
     }
 
+    @Test
+    void shouldReturnStatusCode400WhenBusinessRuleException() throws Exception {
+
+        String street = "Rua Teste";
+        String cep = "12345678";
+        String number = "999";
+
+        var address = Address.builder()
+                .address(street)
+                .cep(cep)
+                .number(number)
+                .city(city)
+                .state(state)
+                .isMain(true)
+                .active(true)
+                .build();
+
+        String fullName = "Fulano de Tal";
+        LocalDate birthDate = LocalDate.of(1990, 1, 1);
+
+        var person = Person.builder()
+                .id(1L)
+                .fullName(fullName)
+                .birthDate(birthDate)
+                .address(address)
+                .mainAddress(address)
+                .build();
+
+        var addresses = Collections.singletonList(new CreatePersonAddressRequest(street, cep, number, city, state, true));
+        var request = new CreatePersonRequest(fullName, birthDate, addresses);
+        var json = gson.toJson(request);
+
+        when(personMapper.createPersonRequestToPerson(request)).thenReturn(person);
+        when(createPerson.create(person)).thenThrow(BusinessRuleException.class);
+
+        mockMvc.perform(post("/api/people")
+                        .contentType("application/json")
+                        .content(json))
+                .andExpect(status().isBadRequest());
+
+        verify(createPerson).create(person);
+    }
 
 }

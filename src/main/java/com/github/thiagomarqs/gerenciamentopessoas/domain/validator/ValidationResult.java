@@ -4,7 +4,6 @@ import com.github.thiagomarqs.gerenciamentopessoas.domain.exception.BusinessRule
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
 
 public class ValidationResult {
 
@@ -26,7 +25,4 @@ public class ValidationResult {
         if(this.hasErrors()) throw BusinessRuleException.ofMany(this.getErrors());
     }
 
-    public <T extends Exception> void throwIfHasErrors(Function<List<String>, T> exceptionFunction) throws T {
-        if(this.hasErrors()) throw exceptionFunction.apply(this.getErrors());
-    }
 }
