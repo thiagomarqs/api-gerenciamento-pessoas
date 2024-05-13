@@ -3,6 +3,7 @@ package com.github.thiagomarqs.gerenciamentopessoas.controller;
 import com.github.thiagomarqs.gerenciamentopessoas.controller.dto.address.request.AddAddressRequest;
 import com.github.thiagomarqs.gerenciamentopessoas.controller.dto.address.request.EditAddressRequest;
 import com.github.thiagomarqs.gerenciamentopessoas.controller.dto.address.request.NewMainAddressRequest;
+import com.github.thiagomarqs.gerenciamentopessoas.controller.dto.address.response.AddressResponse;
 import com.github.thiagomarqs.gerenciamentopessoas.controller.hateoas.links.AddressLinks;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.usecase.address.AddAddress;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.usecase.address.EditAddress;
@@ -11,6 +12,11 @@ import com.github.thiagomarqs.gerenciamentopessoas.domain.usecase.address.Remove
 import com.github.thiagomarqs.gerenciamentopessoas.domain.usecase.person.SetMainAddress;
 import com.github.thiagomarqs.gerenciamentopessoas.mapper.AddressMapper;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
@@ -46,7 +52,18 @@ public class AddressController {
     @Operation(
             summary = "Listar endereços",
             description = "Lista todos os endereços da pessoa especificada. Opcionalmente, pode-se filtrar pelo atributo 'active'.",
-            tags = {"Pessoa", "Endereço"}
+            tags = {"Endereço"},
+            parameters = {
+                    @Parameter(name = "active", description = "Filtrar por endereços ativos ou inativos", example = "true"),
+                    @Parameter(name = "personId", description = "ID da pessoa", required = true, example = "1")
+            }
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "Endereços encontrados e os hiperlinks.",
+            content = @Content(
+                    array = @ArraySchema(schema = @Schema(implementation = AddressResponse.class))
+            )
     )
     @GetMapping("{personId}/addresses")
     public ResponseEntity<?> getPersonAddresses(
@@ -59,10 +76,23 @@ public class AddressController {
         return ResponseEntity.ok(model);
     }
 
+
+
     @Operation(
             summary = "Buscar endereço",
             description = "Busca um endereço específico.",
-            tags = {"Pessoa", "Endereço"}
+            tags = {"Endereço"},
+            parameters = {
+                    @Parameter(name = "personId", description = "ID da pessoa", required = true, example = "1"),
+                    @Parameter(name = "addressId", description = "ID do endereço", required = true, example = "1")
+            }
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "Endereço encontrado e os hiperlinks.",
+            content = @Content(
+                    schema = @Schema(implementation = AddressResponse.class)
+            )
     )
     @GetMapping("{personId}/addresses/{addressId}")
     public ResponseEntity<?> getAddress(@PathVariable("personId") @NotNull Long personId, @PathVariable("addressId") @NotNull Long addressId) {
@@ -72,10 +102,32 @@ public class AddressController {
         return ResponseEntity.ok(model);
     }
 
+
+
     @Operation(
             summary = "Busca por nome",
-            description = "Pesquisa todos os endereços de uma pessoa pelo nome do endereço.",
-            tags = {"Pessoa", "Endereço"}
+            description = "Busca todos os endereços de uma pessoa que contenham o endereço informado.",
+            tags = {"Endereço"},
+            parameters = {
+                    @Parameter(name = "personId", description = "ID da pessoa", required = true, example = "1"),
+                    @Parameter(
+                            name = "address",
+                            description = """
+                                    Endereço a ser buscado.
+                                    É uma operação que busca endereços que CONTENHAM o conteúdo pesquisado.
+                                    Assim, se o endereço pesquisado for 'Rua', endereços como 'Rua 1' e 'Rua 2' serão retornados.
+                                    """,
+                            required = true,
+                            example = "Rua"
+                    )
+            }
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "Endereços encontrados e os hiperlinks.",
+            content = @Content(
+                    array = @ArraySchema(schema = @Schema(implementation = AddressResponse.class))
+            )
     )
     @GetMapping("{personId}/addresses/address/{address}")
     public ResponseEntity<?> getAllByAddressLike(@PathVariable("personId") @NotNull Long personId, @PathVariable("address") @NotBlank String address) {
@@ -85,13 +137,33 @@ public class AddressController {
         return ResponseEntity.ok(model);
     }
 
+
+
     @Operation(
             summary = "Editar endereço",
             description = "Edita o endereço especificado. " +
                     "Se o endereço editado for desativado e for o endereço principal, o sistema automaticamente define o endereço ativo restante como principal. " +
-                    "Se houver mais de um endereço ativo restante, o sistema não define automaticamente um novo endereço principal e retorna erro." +
-                    "Não é possível alterar o 'isMain' de um endereço. Para alterar o endereço principal, utilize o endpoint PUT /api/people/{personId}/addresses/mai.",
-            tags = {"Pessoa", "Endereço"}
+                    "Se houver mais de um endereço ativo restante, o sistema não define automaticamente um novo endereço principal e retorna erro. " +
+                    "Não é possível alterar o 'isMain' de um endereço. Para alterar o endereço principal, utilize o endpoint PUT /api/people/{personId}/addresses/main.",
+            tags = {"Endereço"},
+            parameters = {
+                    @Parameter(name = "personId", description = "ID da pessoa", required = true, example = "1"),
+                    @Parameter(name = "addressId", description = "ID do endereço", required = true, example = "1")
+            }
+    )
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(
+            required = true,
+            description = "Endereço editado.",
+            content = @Content(
+                    schema = @Schema(implementation = EditAddressRequest.class)
+            )
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "Endereço editado e os hiperlinks.",
+            content = @Content(
+                    schema = @Schema(implementation = AddressResponse.class)
+            )
     )
     @PatchMapping("{personId}/addresses/{addressId}")
     public ResponseEntity<?> editAddress(@PathVariable("personId") Long personId, @PathVariable("addressId") Long addressId, @RequestBody @Valid EditAddressRequest request) {
@@ -102,21 +174,40 @@ public class AddressController {
         return ResponseEntity.ok(model);
     }
 
+
+
     @Operation(
             summary = "Remover endereço",
             description = "Remove o endereço especificado.",
-            tags = {"Pessoa", "Endereço"}
+            tags = {"Endereço"},
+            parameters = {
+                    @Parameter(name = "personId", description = "ID da pessoa", required = true, example = "1"),
+                    @Parameter(name = "addressId", description = "ID do endereço", required = true, example = "1")
+            }
     )
+    @ApiResponse(responseCode = "204", description = "Endereço removido com sucesso.")
     @DeleteMapping("{personId}/addresses/{addressId}")
     public ResponseEntity<?> deleteAddress(@PathVariable("personId") @NotNull Long personId, @PathVariable("addressId") @NotNull Long addressId) {
         removeAddress.remove(personId, addressId);
         return ResponseEntity.noContent().build();
     }
 
+
+
     @Operation(
             summary = "Adicionar endereço",
             description = "Adiciona um novo endereço à pessoa especificada",
-            tags = {"Pessoa", "Endereço"}
+            tags = {"Endereço"},
+            parameters = {
+                    @Parameter(name = "personId", description = "ID da pessoa", required = true, example = "1")
+            }
+    )
+    @ApiResponse(
+            responseCode = "201",
+            description = "Endereço adicionado e os hiperlinks.",
+            content = @Content(
+                    schema = @Schema(implementation = AddressResponse.class)
+            )
     )
     @PostMapping("{personId}/addresses")
     public ResponseEntity<?> addAddress(@PathVariable("personId") @NotNull Long personId, @RequestBody @NotNull @Valid AddAddressRequest request) {
@@ -127,10 +218,22 @@ public class AddressController {
         return ResponseEntity.created(model.getRequiredLink("self").toUri()).body(model);
     }
 
+
+
     @Operation(
             summary = "Endereço principal",
             description = "Busca o endereço principal de uma pessoa.",
-            tags = {"Pessoa", "Endereço"}
+            tags = {"Endereço"},
+            parameters = {
+                    @Parameter(name = "personId", description = "ID da pessoa", required = true, example = "1")
+            }
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "Endereço principal encontrado e os hiperlinks.",
+            content = @Content(
+                    schema = @Schema(implementation = AddressResponse.class)
+            )
     )
     @GetMapping("{personId}/addresses/main")
     public ResponseEntity<?> getMainAddress(@PathVariable("personId") @NotNull Long personId) {
@@ -141,11 +244,24 @@ public class AddressController {
         return ResponseEntity.ok(model);
     }
 
+
+
     @Operation(
             summary = "Endereço principal",
             description = "Define o endereço principal de uma pessoa.",
-            tags = {"Pessoa", "Endereço"}
+            tags = {"Endereço"},
+            parameters = {
+                    @Parameter(name = "personId", description = "ID da pessoa", required = true, example = "1")
+            }
     )
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(
+            required = true,
+            description = "Novo endereço.",
+            content = @Content(
+                    schema = @Schema(implementation = NewMainAddressRequest.class)
+            )
+    )
+    @ApiResponse(responseCode = "204", description = "Endereço principal definido com sucesso.")
     @PutMapping("{personId}/addresses/main")
     public ResponseEntity<?> setMainAddress(@PathVariable("personId") @NotNull Long personId, @RequestBody @NotNull @Valid NewMainAddressRequest request) {
         setMainAddress.set(personId, request.id());
