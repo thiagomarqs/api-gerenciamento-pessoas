@@ -20,8 +20,7 @@ O projeto busca os seguintes objetivos:
 ### Como Executar
 O projeto foi desenvolvido utilizando **Java 21** e **Gradle 8.7**.  
 Para inicializar a aplicação, basta executar o comando `gradle bootRun` na pasta raiz do projeto.  
-A aplicação estará disponível a partir do endpoint base `http://localhost:8080`.  
-Este projeto propositalmente possui apenas o profile **`dev`**, que utiliza o banco de dados em memória H2, já que o foco é demonstrar implementação do código.
+A aplicação estará disponível a partir do endpoint base `http://localhost:8080`.
 
 ## Arquitetura do Projeto (Pacotes)
 O projeto utiliza uma arquitetura em camadas particionada por capacidades técnicas (_technical-partitioned_), adequado para o porte do projeto.  

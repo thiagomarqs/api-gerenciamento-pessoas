@@ -27,9 +27,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/people")
@@ -164,10 +164,20 @@ public class PersonController {
             @RequestParam(value = "ids", required = false) String ids
     ){
         List<Person> people;
-        List<Long> idsList = Arrays
-                .stream(ids.trim().split(","))
-                .map(Long::valueOf)
-                .collect(Collectors.toList());
+        List<Long> idsList = new ArrayList<>();
+
+        if(ids != null) {
+            var isIdsParameterAValidList = ids.matches("^(\\d+,)*\\d+$");
+
+            if(isIdsParameterAValidList) {
+                idsList.addAll(
+                    Arrays
+                        .stream(ids.trim().split(","))
+                        .map(Long::valueOf)
+                        .toList()
+                );
+            }
+        }
 
         if (!idsList.isEmpty()) {
             people = findPeople.findMany(idsList);
