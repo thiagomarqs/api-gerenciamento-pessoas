@@ -22,6 +22,19 @@ O projeto foi desenvolvido utilizando **Java 21** e **Gradle 8.7**.
 Para inicializar a aplicação, basta executar o comando `gradle bootRun` na pasta raiz do projeto.  
 A aplicação estará disponível a partir do endpoint base `http://localhost:8080`.
 
+## AWS
+O projeto foi atualizado para ser deployado na AWS.
+Para tal, foi utilizado o AWS CDK para a construção da infraestrutura necessária para o deploy da aplicação.
+A infraestrutura consiste em:
+* Um banco de dados RDS MySQL;
+* Um cluster ECS Fargate para a execução da aplicação, configurado para ter duas tasks em execução;
+* Um Application Load Balancer para roteamento do tráfego para o cluster ECS.
+
+## Deploy
+No diretório _cdk_project_ há um projeto AWS CDK para deploy da aplicação na AWS.
+Considerando um ambiente com o AWS CLI e o AWS CDK já corretamente configurados, basta ir no terminal e executar o comando `cdk deploy --parameters databasePass=<senhaDoRDS> --parameters databaseAdminUserName=<nomeParaUsuarioAdmin> --parameters springProfilesActive=prod` para realizar o deploy da aplicação na AWS.
+No comando acima, é **obrigatório** definir o valor dos parâmetros `databasePass`, `databaseAdminUserName`, respectivamente a senha e o usuário da instância do banco RDS que será criado.
+
 ## Arquitetura do Projeto (Pacotes)
 O projeto utiliza uma arquitetura em camadas particionada por capacidades técnicas (_technical-partitioned_), adequado para o porte do projeto.  
 Cada camada no particionamento por capacidades técnicas possui características técnicas coesas. Por exemplo, tudo que estiver na camada “controller” estará responsável pela interação com os clientes da API, enquanto a camada “domain” foca no domínio e nas regras de negócio.
