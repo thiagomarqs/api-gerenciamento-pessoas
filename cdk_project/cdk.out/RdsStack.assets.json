@@ -1,0 +1,19 @@
+{
+  "version": "36.0.0",
+  "files": {
+    "05775293e539cb105874da1b009529c203468eeef4b50eb0e0f722dd8ddf399d": {
+      "source": {
+        "path": "RdsStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "05775293e539cb105874da1b009529c203468eeef4b50eb0e0f722dd8ddf399d.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

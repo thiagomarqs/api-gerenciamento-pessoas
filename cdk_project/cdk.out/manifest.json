@@ -1,0 +1,323 @@
+{
+  "version": "36.0.0",
+  "artifacts": {
+    "GerenciamentoPessoasAppStack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "GerenciamentoPessoasAppStack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "GerenciamentoPessoasAppStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "GerenciamentoPessoasAppStack.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1a3c845176089949b334c17d6d939717f6ce2206f6576642d85227fe7f42e72e.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "GerenciamentoPessoasAppStack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "GerenciamentoPessoasAppStack.assets"
+      ],
+      "metadata": {
+        "/GerenciamentoPessoasAppStack/databasePass": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "databasePass"
+          }
+        ],
+        "/GerenciamentoPessoasAppStack/databaseAdminUserName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "databaseAdminUserName"
+          }
+        ],
+        "/GerenciamentoPessoasAppStack/springProfilesActive": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "springProfilesActive"
+          }
+        ],
+        "/GerenciamentoPessoasAppStack/VPC/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCB9E5F0B4"
+          }
+        ],
+        "/GerenciamentoPessoasAppStack/VPC/PublicSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1SubnetB4246D30"
+          }
+        ],
+        "/GerenciamentoPessoasAppStack/VPC/PublicSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1RouteTableFEE4B781"
+          }
+        ],
+        "/GerenciamentoPessoasAppStack/VPC/PublicSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1RouteTableAssociation0B0896DC"
+          }
+        ],
+        "/GerenciamentoPessoasAppStack/VPC/PublicSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1DefaultRoute91CEF279"
+          }
+        ],
+        "/GerenciamentoPessoasAppStack/VPC/PublicSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet2Subnet74179F39"
+          }
+        ],
+        "/GerenciamentoPessoasAppStack/VPC/PublicSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet2RouteTable6F1A15F1"
+          }
+        ],
+        "/GerenciamentoPessoasAppStack/VPC/PublicSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet2RouteTableAssociation5A808732"
+          }
+        ],
+        "/GerenciamentoPessoasAppStack/VPC/PublicSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet2DefaultRouteB7481BBA"
+          }
+        ],
+        "/GerenciamentoPessoasAppStack/VPC/IsolatedSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCIsolatedSubnet1SubnetEBD00FC6"
+          }
+        ],
+        "/GerenciamentoPessoasAppStack/VPC/IsolatedSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCIsolatedSubnet1RouteTableEB156210"
+          }
+        ],
+        "/GerenciamentoPessoasAppStack/VPC/IsolatedSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCIsolatedSubnet1RouteTableAssociationA2D18F7C"
+          }
+        ],
+        "/GerenciamentoPessoasAppStack/VPC/IsolatedSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCIsolatedSubnet2Subnet4B1C8CAA"
+          }
+        ],
+        "/GerenciamentoPessoasAppStack/VPC/IsolatedSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCIsolatedSubnet2RouteTable9B4F78DC"
+          }
+        ],
+        "/GerenciamentoPessoasAppStack/VPC/IsolatedSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCIsolatedSubnet2RouteTableAssociation7BF8E0EB"
+          }
+        ],
+        "/GerenciamentoPessoasAppStack/VPC/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCIGWB7E252D3"
+          }
+        ],
+        "/GerenciamentoPessoasAppStack/VPC/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCVPCGW99B986DC"
+          }
+        ],
+        "/GerenciamentoPessoasAppStack/VPC/RestrictDefaultSecurityGroupCustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCRestrictDefaultSecurityGroupCustomResource59474679"
+          }
+        ],
+        "/GerenciamentoPessoasAppStack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
+          }
+        ],
+        "/GerenciamentoPessoasAppStack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E"
+          }
+        ],
+        "/GerenciamentoPessoasAppStack/GerenciamentoPessoasAppStack/from 0.0.0.0_0:3306": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GerenciamentoPessoasAppStackfrom00000330633CAFDB1"
+          }
+        ],
+        "/GerenciamentoPessoasAppStack/Rds/SubnetGroup/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RdsSubnetGroup8D91727A"
+          }
+        ],
+        "/GerenciamentoPessoasAppStack/Rds/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Rds34D05673"
+          }
+        ],
+        "/GerenciamentoPessoasAppStack/GerenciamentoPessoasCluster/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GerenciamentoPessoasCluster5DE7106F"
+          }
+        ],
+        "/GerenciamentoPessoasAppStack/GerenciamentoPessoasService/LB/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GerenciamentoPessoasServiceLB2163B27C"
+          }
+        ],
+        "/GerenciamentoPessoasAppStack/GerenciamentoPessoasService/LB/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GerenciamentoPessoasServiceLBSecurityGroupB36E16D4"
+          }
+        ],
+        "/GerenciamentoPessoasAppStack/GerenciamentoPessoasService/LB/SecurityGroup/to GerenciamentoPessoasAppStackGerenciamentoPessoasServiceSecurityGroupBAEC2548:8080": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GerenciamentoPessoasServiceLBSecurityGrouptoGerenciamentoPessoasAppStackGerenciamentoPessoasServiceSecurityGroupBAEC254880808CDF75C5"
+          }
+        ],
+        "/GerenciamentoPessoasAppStack/GerenciamentoPessoasService/LB/PublicListener/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GerenciamentoPessoasServiceLBPublicListenerE7029720"
+          }
+        ],
+        "/GerenciamentoPessoasAppStack/GerenciamentoPessoasService/LB/PublicListener/ECSGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GerenciamentoPessoasServiceLBPublicListenerECSGroup78C12B4E"
+          }
+        ],
+        "/GerenciamentoPessoasAppStack/GerenciamentoPessoasService/LoadBalancerDNS": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GerenciamentoPessoasServiceLoadBalancerDNS3D4E1898"
+          }
+        ],
+        "/GerenciamentoPessoasAppStack/GerenciamentoPessoasService/ServiceURL": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GerenciamentoPessoasServiceServiceURL2DA2E6B1"
+          }
+        ],
+        "/GerenciamentoPessoasAppStack/GerenciamentoPessoasService/TaskDef/TaskRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GerenciamentoPessoasServiceTaskDefTaskRole7292364A"
+          }
+        ],
+        "/GerenciamentoPessoasAppStack/GerenciamentoPessoasService/TaskDef/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GerenciamentoPessoasServiceTaskDef19B5B382"
+          }
+        ],
+        "/GerenciamentoPessoasAppStack/GerenciamentoPessoasService/TaskDef/GerenciamentoPessoas/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GerenciamentoPessoasServiceTaskDefGerenciamentoPessoasLogGroup8C7682C4"
+          }
+        ],
+        "/GerenciamentoPessoasAppStack/GerenciamentoPessoasService/TaskDef/ExecutionRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GerenciamentoPessoasServiceTaskDefExecutionRoleC84AC1F0"
+          }
+        ],
+        "/GerenciamentoPessoasAppStack/GerenciamentoPessoasService/TaskDef/ExecutionRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GerenciamentoPessoasServiceTaskDefExecutionRoleDefaultPolicy13867214"
+          }
+        ],
+        "/GerenciamentoPessoasAppStack/GerenciamentoPessoasService/Service/Service": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GerenciamentoPessoasService3028AB7D"
+          }
+        ],
+        "/GerenciamentoPessoasAppStack/GerenciamentoPessoasService/Service/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GerenciamentoPessoasServiceSecurityGroupC0AAECDA"
+          }
+        ],
+        "/GerenciamentoPessoasAppStack/GerenciamentoPessoasService/Service/SecurityGroup/from GerenciamentoPessoasAppStackGerenciamentoPessoasServiceLBSecurityGroupBEB2233F:8080": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GerenciamentoPessoasServiceSecurityGroupfromGerenciamentoPessoasAppStackGerenciamentoPessoasServiceLBSecurityGroupBEB2233F8080FEC13948"
+          }
+        ],
+        "/GerenciamentoPessoasAppStack/CDKMetadata/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadata"
+          }
+        ],
+        "/GerenciamentoPessoasAppStack/CDKMetadata/Condition": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadataAvailable"
+          }
+        ],
+        "/GerenciamentoPessoasAppStack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/GerenciamentoPessoasAppStack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "GerenciamentoPessoasAppStack"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}
