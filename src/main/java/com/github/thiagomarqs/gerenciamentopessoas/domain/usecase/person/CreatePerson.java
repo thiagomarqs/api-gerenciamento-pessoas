@@ -4,6 +4,7 @@ import com.github.thiagomarqs.gerenciamentopessoas.domain.entity.Address;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.entity.Person;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.repository.PersonRepository;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.validator.usecase.person.CreatePersonBusinessRuleValidator;
+import com.github.thiagomarqs.gerenciamentopessoas.domain.validator.usecase.professionaldata.ProfessionalDataBusinessRuleValidator;
 import jakarta.inject.Inject;
 import org.springframework.stereotype.Component;
 
@@ -12,16 +13,19 @@ public class CreatePerson {
 
     private final PersonRepository personRepository;
     private final CreatePersonBusinessRuleValidator businessRuleValidator;
+    private final ProfessionalDataBusinessRuleValidator professionalDataBusinessRuleValidator;
 
     @Inject
-    public CreatePerson(PersonRepository personRepository, CreatePersonBusinessRuleValidator businessRuleValidator) {
+    public CreatePerson(PersonRepository personRepository, CreatePersonBusinessRuleValidator businessRuleValidator, ProfessionalDataBusinessRuleValidator professionalDataBusinessRuleValidator) {
         this.personRepository = personRepository;
         this.businessRuleValidator = businessRuleValidator;
+        this.professionalDataBusinessRuleValidator = professionalDataBusinessRuleValidator;
     }
 
     public Person create(Person person) {
 
         throwIfFailsValidation(person);
+        throwIfFailsProfessionalDataValidation(person);
         setMainAddress(person);
 
         return personRepository.save(person);
@@ -30,6 +34,12 @@ public class CreatePerson {
     private void throwIfFailsValidation(Person person) {
         businessRuleValidator
                 .validate(person)
+                .throwIfHasErrors();
+    }
+
+    private void throwIfFailsProfessionalDataValidation(Person person) {
+        professionalDataBusinessRuleValidator
+                .validate(person.getProfessionalData())
                 .throwIfHasErrors();
     }
 

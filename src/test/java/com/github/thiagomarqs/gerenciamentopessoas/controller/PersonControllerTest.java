@@ -7,7 +7,11 @@ import com.github.thiagomarqs.gerenciamentopessoas.controller.dto.person.request
 import com.github.thiagomarqs.gerenciamentopessoas.controller.dto.person.request.EditPersonRequest;
 import com.github.thiagomarqs.gerenciamentopessoas.controller.dto.person.response.EditedPersonResponse;
 import com.github.thiagomarqs.gerenciamentopessoas.controller.dto.person.response.PersonResponse;
+import com.github.thiagomarqs.gerenciamentopessoas.controller.dto.professionaldata.request.ProfessionalDataRequest;
+import com.github.thiagomarqs.gerenciamentopessoas.controller.dto.professionaldata.request.UpdateProfessionalDataRequest;
+import com.github.thiagomarqs.gerenciamentopessoas.controller.dto.professionaldata.response.ProfessionalDataResponse;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.entity.Address;
+import com.github.thiagomarqs.gerenciamentopessoas.domain.entity.ContractType;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.entity.Person;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.exception.BusinessRuleException;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.exception.EntityNotFoundException;
@@ -95,12 +99,12 @@ class PersonControllerTest {
                 .build();
 
         var addresses = Collections.singletonList(new CreatePersonAddressRequest(street, cep, number, city, state, true));
-        var request = new CreatePersonRequest(fullName, birthDate, addresses);
+        var request = new CreatePersonRequest(fullName, birthDate, addresses, null);
         var json = gson.toJson(request);
 
         when(personMapper.createPersonRequestToPerson(request)).thenReturn(person);
         when(createPerson.create(person)).thenReturn(person);
-        when(personMapper.personToPersonResponse(person)).thenReturn(new PersonResponse(1L, fullName, birthDate.toString(), mock(AddressResponse.class), Collections.emptyList(), true));
+        when(personMapper.personToPersonResponse(person)).thenReturn(new PersonResponse(1L, fullName, birthDate.toString(), mock(AddressResponse.class), Collections.emptyList(), true, null));
 
         mockMvc.perform(post("/api/people")
                 .contentType("application/json")
@@ -122,7 +126,7 @@ class PersonControllerTest {
                 .active(false)
                 .build();
 
-        var request = new EditPersonRequest(fullName, birthDate, false);
+        var request = new EditPersonRequest(fullName, birthDate, false, null);
         var json = gson.toJson(request);
 
         when(personMapper.editPersonRequestToPerson(request)).thenReturn(person);
@@ -212,7 +216,7 @@ class PersonControllerTest {
                 .build();
 
         var addresses = Collections.singletonList(new CreatePersonAddressRequest(street, cep, number, city, state, true));
-        var request = new CreatePersonRequest(fullName, birthDate, addresses);
+        var request = new CreatePersonRequest(fullName, birthDate, addresses, null);
         var json = gson.toJson(request);
 
         when(personMapper.createPersonRequestToPerson(request)).thenReturn(person);
@@ -224,6 +228,288 @@ class PersonControllerTest {
                 .andExpect(status().isBadRequest());
 
         verify(createPerson).create(person);
+    }
+
+    @Test
+    void shouldReturnStatusCode201WhenPersonIsCreatedWithProfessionalData() throws Exception {
+        String street = "Rua Teste";
+        String cep = "12345678";
+        String number = "999";
+        String fullName = "Fulano de Tal";
+        LocalDate birthDate = LocalDate.of(1990, 1, 1);
+        String companyName = "Empresa Teste";
+        ContractType contractType = ContractType.CLT;
+        LocalDate employmentStartDate = LocalDate.of(2020, 1, 1);
+
+        var address = Address.builder()
+                .address(street)
+                .cep(cep)
+                .number(number)
+                .city(city)
+                .state(state)
+                .isMain(true)
+                .active(true)
+                .build();
+
+        var person = Person.builder()
+                .id(1L)
+                .fullName(fullName)
+                .birthDate(birthDate)
+                .address(address)
+                .mainAddress(address)
+                .build();
+
+        var addresses = Collections.singletonList(new CreatePersonAddressRequest(street, cep, number, city, state, true));
+        var professionalData = new ProfessionalDataRequest(companyName, contractType, employmentStartDate);
+        var request = new CreatePersonRequest(fullName, birthDate, addresses, professionalData);
+        var json = gson.toJson(request);
+
+        when(personMapper.createPersonRequestToPerson(request)).thenReturn(person);
+        when(createPerson.create(person)).thenReturn(person);
+        when(personMapper.personToPersonResponse(person)).thenReturn(new PersonResponse(1L, fullName, birthDate.toString(), mock(AddressResponse.class), Collections.emptyList(), true, mock(ProfessionalDataResponse.class)));
+
+        mockMvc.perform(post("/api/people")
+                        .contentType("application/json")
+                        .content(json))
+                .andExpect(status().isCreated());
+    }
+
+    @Test
+    void shouldReturnStatusCode201WhenPersonIsCreatedWithoutProfessionalData() throws Exception {
+        String street = "Rua Teste";
+        String cep = "12345678";
+        String number = "999";
+        String fullName = "Fulano de Tal";
+        LocalDate birthDate = LocalDate.of(1990, 1, 1);
+
+        var address = Address.builder()
+                .address(street)
+                .cep(cep)
+                .number(number)
+                .city(city)
+                .state(state)
+                .isMain(true)
+                .active(true)
+                .build();
+
+        var person = Person.builder()
+                .id(1L)
+                .fullName(fullName)
+                .birthDate(birthDate)
+                .address(address)
+                .mainAddress(address)
+                .build();
+
+        var addresses = Collections.singletonList(new CreatePersonAddressRequest(street, cep, number, city, state, true));
+        var request = new CreatePersonRequest(fullName, birthDate, addresses, null);
+        var json = gson.toJson(request);
+
+        when(personMapper.createPersonRequestToPerson(request)).thenReturn(person);
+        when(createPerson.create(person)).thenReturn(person);
+        when(personMapper.personToPersonResponse(person)).thenReturn(new PersonResponse(1L, fullName, birthDate.toString(), mock(AddressResponse.class), Collections.emptyList(), true, null));
+
+        mockMvc.perform(post("/api/people")
+                        .contentType("application/json")
+                        .content(json))
+                .andExpect(status().isCreated());
+    }
+
+    @Test
+    void shouldReturnStatusCode200WhenPersonProfessionalDataIsUpdated() throws Exception {
+        String fullName = "Fulano de Tal";
+        LocalDate birthDate = LocalDate.of(1990, 1, 1);
+        Long personId = 1L;
+        String companyName = "Nova Empresa";
+        ContractType contractType = ContractType.PJ;
+        LocalDate employmentStartDate = LocalDate.of(2021, 1, 1);
+
+        var person = Person.builder()
+                .id(personId)
+                .fullName(fullName)
+                .birthDate(birthDate)
+                .active(true)
+                .build();
+
+        var professionalData = new UpdateProfessionalDataRequest(companyName, contractType, employmentStartDate);
+        var request = new EditPersonRequest(fullName, birthDate, true, professionalData);
+        var json = gson.toJson(request);
+
+        when(personMapper.editPersonRequestToPerson(request)).thenReturn(person);
+        when(editPerson.edit(personId, person)).thenReturn(person);
+        when(personMapper.personToEditedPersonResponse(person)).thenReturn(new EditedPersonResponse(personId, fullName, birthDate.toString(), true));
+
+        mockMvc.perform(patch("/api/people/" + personId)
+                        .contentType("application/json")
+                        .content(json))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void shouldReturnStatusCode200WhenPersonProfessionalDataIsRemoved() throws Exception {
+        String fullName = "Fulano de Tal";
+        LocalDate birthDate = LocalDate.of(1990, 1, 1);
+        Long personId = 1L;
+
+        var person = Person.builder()
+                .id(personId)
+                .fullName(fullName)
+                .birthDate(birthDate)
+                .active(true)
+                .build();
+
+        var request = new EditPersonRequest(fullName, birthDate, true, null);
+        var json = gson.toJson(request);
+
+        when(personMapper.editPersonRequestToPerson(request)).thenReturn(person);
+        when(editPerson.edit(personId, person)).thenReturn(person);
+        when(personMapper.personToEditedPersonResponse(person)).thenReturn(new EditedPersonResponse(personId, fullName, birthDate.toString(), true));
+
+        mockMvc.perform(patch("/api/people/" + personId)
+                        .contentType("application/json")
+                        .content(json))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void shouldReturnStatusCode200WhenPersonProfessionalDataIsMaintained() throws Exception {
+        String fullName = "Fulano de Tal";
+        LocalDate birthDate = LocalDate.of(1990, 1, 1);
+        Long personId = 1L;
+
+        var person = Person.builder()
+                .id(personId)
+                .fullName(fullName)
+                .birthDate(birthDate)
+                .active(true)
+                .build();
+
+        var request = new EditPersonRequest(fullName, birthDate, true, null);
+        var json = gson.toJson(request);
+
+        when(personMapper.editPersonRequestToPerson(request)).thenReturn(person);
+        when(editPerson.edit(personId, person)).thenReturn(person);
+        when(personMapper.personToEditedPersonResponse(person)).thenReturn(new EditedPersonResponse(personId, fullName, birthDate.toString(), true));
+
+        mockMvc.perform(patch("/api/people/" + personId)
+                        .contentType("application/json")
+                        .content(json))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void shouldReturnStatusCode200WhenGetPersonByIdWithProfessionalData() throws Exception {
+        Long personId = 1L;
+        String fullName = "Fulano de Tal";
+        LocalDate birthDate = LocalDate.of(1990, 1, 1);
+
+        var person = Person.builder()
+                .id(personId)
+                .fullName(fullName)
+                .birthDate(birthDate)
+                .active(true)
+                .build();
+
+        when(findPeople.findOne(personId)).thenReturn(person);
+        when(personMapper.personToPersonResponse(person)).thenReturn(new PersonResponse(personId, fullName, birthDate.toString(), mock(AddressResponse.class), Collections.emptyList(), true, mock(ProfessionalDataResponse.class)));
+
+        mockMvc.perform(get("/api/people/" + personId))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void shouldReturnStatusCode200WhenGetPersonByIdWithoutProfessionalData() throws Exception {
+        Long personId = 1L;
+        String fullName = "Fulano de Tal";
+        LocalDate birthDate = LocalDate.of(1990, 1, 1);
+
+        var person = Person.builder()
+                .id(personId)
+                .fullName(fullName)
+                .birthDate(birthDate)
+                .active(true)
+                .build();
+
+        when(findPeople.findOne(personId)).thenReturn(person);
+        when(personMapper.personToPersonResponse(person)).thenReturn(new PersonResponse(personId, fullName, birthDate.toString(), mock(AddressResponse.class), Collections.emptyList(), true, null));
+
+        mockMvc.perform(get("/api/people/" + personId))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void shouldReturnStatusCode200WhenGetAllPeopleWithProfessionalData() throws Exception {
+        String fullName = "Fulano de Tal";
+        LocalDate birthDate = LocalDate.of(1990, 1, 1);
+
+        var person = Person.builder()
+                .id(1L)
+                .fullName(fullName)
+                .birthDate(birthDate)
+                .active(true)
+                .build();
+
+        when(findPeople.findAll()).thenReturn(Collections.singletonList(person));
+        when(personMapper.personToPersonResponse(person)).thenReturn(new PersonResponse(1L, fullName, birthDate.toString(), mock(AddressResponse.class), Collections.emptyList(), true, mock(ProfessionalDataResponse.class)));
+
+        mockMvc.perform(get("/api/people"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void shouldReturnStatusCode400WhenPatchWithInvalidContractType() throws Exception {
+        String fullName = "Fulano de Tal";
+        LocalDate birthDate = LocalDate.of(1990, 1, 1);
+        Long personId = 1L;
+        String companyName = "Empresa Teste";
+        LocalDate employmentStartDate = LocalDate.of(2020, 1, 1);
+
+        var person = Person.builder()
+                .id(personId)
+                .fullName(fullName)
+                .birthDate(birthDate)
+                .active(true)
+                .build();
+
+        var professionalData = new UpdateProfessionalDataRequest(companyName, null, employmentStartDate);
+        var request = new EditPersonRequest(fullName, birthDate, true, professionalData);
+        var json = gson.toJson(request);
+
+        when(personMapper.editPersonRequestToPerson(request)).thenReturn(person);
+        when(editPerson.edit(personId, person)).thenThrow(BusinessRuleException.class);
+
+        mockMvc.perform(patch("/api/people/" + personId)
+                        .contentType("application/json")
+                        .content(json))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void shouldReturnStatusCode400WhenPatchWithFutureDate() throws Exception {
+        String fullName = "Fulano de Tal";
+        LocalDate birthDate = LocalDate.of(1990, 1, 1);
+        Long personId = 1L;
+        String companyName = "Empresa Teste";
+        ContractType contractType = ContractType.CLT;
+        LocalDate employmentStartDate = LocalDate.now().plusDays(1);
+
+        var person = Person.builder()
+                .id(personId)
+                .fullName(fullName)
+                .birthDate(birthDate)
+                .active(true)
+                .build();
+
+        var professionalData = new UpdateProfessionalDataRequest(companyName, contractType, employmentStartDate);
+        var request = new EditPersonRequest(fullName, birthDate, true, professionalData);
+        var json = gson.toJson(request);
+
+        when(personMapper.editPersonRequestToPerson(request)).thenReturn(person);
+        when(editPerson.edit(personId, person)).thenThrow(BusinessRuleException.class);
+
+        mockMvc.perform(patch("/api/people/" + personId)
+                        .contentType("application/json")
+                        .content(json))
+                .andExpect(status().isBadRequest());
     }
 
 }

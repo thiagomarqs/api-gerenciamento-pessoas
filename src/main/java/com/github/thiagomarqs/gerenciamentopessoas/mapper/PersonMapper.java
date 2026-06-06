@@ -14,11 +14,12 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
-@Mapper
+@Mapper(uses = ProfessionalDataMapper.class)
 public interface PersonMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "active", ignore = true)
+    @Mapping(target = "professionalData.person", ignore = true)
     Person createPersonRequestToPerson(CreatePersonRequest createPersonRequest);
 
     PersonResponse personToPersonResponse(Person person);
@@ -26,6 +27,8 @@ public interface PersonMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "addresses", ignore = true)
     @Mapping(target = "mainAddress", ignore = true)
+    @Mapping(target = "active", ignore = true)
+    @Mapping(target = "professionalData.person", ignore = true)
     Person editPersonRequestToPerson(EditPersonRequest request);
 
     EditedPersonResponse personToEditedPersonResponse(Person edited);
@@ -39,6 +42,9 @@ public interface PersonMapper {
         }
         if(person.getMainAddress() != null) {
             person.getMainAddress().setPerson(person);
+        }
+        if(person.getProfessionalData() != null) {
+            person.getProfessionalData().setPerson(person);
         }
     }
 
