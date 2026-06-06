@@ -25,6 +25,10 @@ public class Person implements Serializable {
     @OneToOne(cascade = CascadeType.ALL)
     private Address mainAddress;
 
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn
+    private ProfessionalData professionalData;
+
     private boolean active = true;
 
     public Person() {}
@@ -36,12 +40,13 @@ public class Person implements Serializable {
         this.mainAddress = mainAddress;
     }
 
-    public Person(Long id, String fullName, LocalDate birthDate, List<Address> addresses, Address mainAddress, boolean active) {
+    public Person(Long id, String fullName, LocalDate birthDate, List<Address> addresses, Address mainAddress, ProfessionalData professionalData, boolean active) {
         this.id = id;
         this.fullName = fullName;
         this.birthDate = birthDate;
         this.addresses = addresses;
         this.mainAddress = mainAddress;
+        this.professionalData = professionalData;
         this.active = active;
     }
 
@@ -109,6 +114,14 @@ public class Person implements Serializable {
         this.mainAddress = newMainAddress;
     }
 
+    public ProfessionalData getProfessionalData() {
+        return professionalData;
+    }
+
+    public void setProfessionalData(ProfessionalData professionalData) {
+        this.professionalData = professionalData;
+    }
+
     public boolean isActive() {
         return active;
     }
@@ -151,6 +164,11 @@ public class Person implements Serializable {
             return this;
         }
 
+        public Builder professionalData(ProfessionalData professionalData) {
+            person.professionalData = professionalData;
+            return this;
+        }
+
         public Builder active(boolean active) {
             person.active = active;
             return this;
@@ -182,6 +200,7 @@ public class Person implements Serializable {
                 ", birthDate=" + birthDate +
                 ", addresses=" + addresses +
                 ", mainAddress=" + mainAddress +
+                ", professionalData=" + professionalData +
                 ", active=" + active +
                 '}';
     }

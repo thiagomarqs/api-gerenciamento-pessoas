@@ -1,8 +1,12 @@
 package com.github.thiagomarqs.gerenciamentopessoas.domain.usecase.person;
 
 import com.github.thiagomarqs.gerenciamentopessoas.domain.entity.Address;
+import com.github.thiagomarqs.gerenciamentopessoas.domain.entity.ContractType;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.entity.Person;
+import com.github.thiagomarqs.gerenciamentopessoas.domain.entity.ProfessionalData;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.repository.PersonRepository;
+import com.github.thiagomarqs.gerenciamentopessoas.domain.validator.ValidationResult;
+import com.github.thiagomarqs.gerenciamentopessoas.domain.validator.usecase.professionaldata.ProfessionalDataBusinessRuleValidator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -22,6 +26,9 @@ class EditPersonTest {
 
     @Mock
     FindPeople findPeople;
+
+    @Mock
+    ProfessionalDataBusinessRuleValidator professionalDataValidator;
 
     @InjectMocks
     EditPerson editPerson;
@@ -200,6 +207,295 @@ class EditPersonTest {
             assertEquals(person, a.getPerson());
         });
 
+    }
+
+    @Test
+    void shouldUpdateProfessionalDataWhenPresent() {
+        var personId = 1L;
+
+        var oldProfessionalData = ProfessionalData.builder()
+                .id(1L)
+                .companyName("Old Company")
+                .contractType(ContractType.CLT)
+                .employmentStartDate(LocalDate.of(2020, 1, 1))
+                .build();
+
+        var person = Person.builder()
+                .id(personId)
+                .fullName("Fulano de Tal")
+                .active(true)
+                .birthDate(LocalDate.of(1990, 1, 1))
+                .professionalData(oldProfessionalData)
+                .build();
+
+        var newProfessionalData = ProfessionalData.builder()
+                .companyName("New Company")
+                .contractType(ContractType.PJ)
+                .employmentStartDate(LocalDate.of(2023, 6, 1))
+                .build();
+
+        var edited = Person.builder()
+                .id(personId)
+                .fullName("Fulano de Tal")
+                .active(true)
+                .birthDate(LocalDate.of(1990, 1, 1))
+                .professionalData(newProfessionalData)
+                .build();
+
+        when(findPeople.findOne(personId)).thenReturn(person);
+        when(professionalDataValidator.validate(newProfessionalData)).thenReturn(new ValidationResult());
+
+        assertEquals(oldProfessionalData, person.getProfessionalData());
+
+        editPerson.edit(personId, edited);
+
+        assertEquals(newProfessionalData.getCompanyName(), person.getProfessionalData().getCompanyName());
+        assertEquals(newProfessionalData.getContractType(), person.getProfessionalData().getContractType());
+        assertEquals(newProfessionalData.getEmploymentStartDate(), person.getProfessionalData().getEmploymentStartDate());
+    }
+
+    @Test
+    void shouldAddProfessionalDataWhenPersonHasNone() {
+        var personId = 1L;
+
+        var person = Person.builder()
+                .id(personId)
+                .fullName("Fulano de Tal")
+                .active(true)
+                .birthDate(LocalDate.of(1990, 1, 1))
+                .build();
+
+        var professionalData = ProfessionalData.builder()
+                .companyName("New Company")
+                .contractType(ContractType.PJ)
+                .employmentStartDate(LocalDate.of(2023, 6, 1))
+                .build();
+
+        var edited = Person.builder()
+                .id(personId)
+                .fullName("Fulano de Tal")
+                .active(true)
+                .birthDate(LocalDate.of(1990, 1, 1))
+                .professionalData(professionalData)
+                .build();
+
+        when(findPeople.findOne(personId)).thenReturn(person);
+        when(professionalDataValidator.validate(professionalData)).thenReturn(new ValidationResult());
+
+        assertNull(person.getProfessionalData());
+
+        editPerson.edit(personId, edited);
+
+        assertNotNull(person.getProfessionalData());
+        assertEquals(professionalData.getCompanyName(), person.getProfessionalData().getCompanyName());
+        assertEquals(professionalData.getContractType(), person.getProfessionalData().getContractType());
+        assertEquals(professionalData.getEmploymentStartDate(), person.getProfessionalData().getEmploymentStartDate());
+    }
+
+    @Test
+    void shouldRemoveProfessionalDataWhenNull() {
+        var personId = 1L;
+
+        var professionalData = ProfessionalData.builder()
+                .id(1L)
+                .companyName("Company")
+                .contractType(ContractType.CLT)
+                .employmentStartDate(LocalDate.of(2020, 1, 1))
+                .build();
+
+        var person = Person.builder()
+                .id(personId)
+                .fullName("Fulano de Tal")
+                .active(true)
+                .birthDate(LocalDate.of(1990, 1, 1))
+                .professionalData(professionalData)
+                .build();
+
+        var edited = Person.builder()
+                .id(personId)
+                .fullName("Fulano de Tal")
+                .active(true)
+                .birthDate(LocalDate.of(1990, 1, 1))
+                .professionalData(null)
+                .build();
+
+        when(findPeople.findOne(personId)).thenReturn(person);
+
+        assertNotNull(person.getProfessionalData());
+        assertEquals("Fulano de Tal", person.getFullName());
+        assertTrue(person.isActive());
+        assertEquals(LocalDate.of(1990, 1, 1), person.getBirthDate());
+
+        editPerson.edit(personId, edited);
+
+        assertNull(person.getProfessionalData());
+        assertEquals("Fulano de Tal", person.getFullName());
+        assertTrue(person.isActive());
+        assertEquals(LocalDate.of(1990, 1, 1), person.getBirthDate());
+    }
+
+    @Test
+    void shouldThrowExceptionWhenContractTypeIsNull() {
+        var personId = 1L;
+
+        var person = Person.builder()
+                .id(personId)
+                .fullName("Fulano de Tal")
+                .active(true)
+                .birthDate(LocalDate.of(1990, 1, 1))
+                .build();
+
+        var professionalData = ProfessionalData.builder()
+                .companyName("Company")
+                .contractType(null)
+                .employmentStartDate(LocalDate.of(2023, 6, 1))
+                .build();
+
+        var edited = Person.builder()
+                .id(personId)
+                .fullName("Fulano de Tal")
+                .active(true)
+                .birthDate(LocalDate.of(1990, 1, 1))
+                .professionalData(professionalData)
+                .build();
+
+        when(findPeople.findOne(personId)).thenReturn(person);
+
+        ValidationResult validationResult = new ValidationResult();
+        validationResult.addError("CONTRACT_TYPE_INVALID");
+        when(professionalDataValidator.validate(professionalData)).thenReturn(validationResult);
+
+        assertThrows(com.github.thiagomarqs.gerenciamentopessoas.domain.exception.BusinessRuleException.class, () -> {
+            editPerson.edit(personId, edited);
+        });
+    }
+
+    @Test
+    void shouldThrowExceptionWhenEmploymentStartDateIsFuture() {
+        var personId = 1L;
+
+        var person = Person.builder()
+                .id(personId)
+                .fullName("Fulano de Tal")
+                .active(true)
+                .birthDate(LocalDate.of(1990, 1, 1))
+                .build();
+
+        var professionalData = ProfessionalData.builder()
+                .companyName("Company")
+                .contractType(ContractType.CLT)
+                .employmentStartDate(LocalDate.now().plusDays(1))
+                .build();
+
+        var edited = Person.builder()
+                .id(personId)
+                .fullName("Fulano de Tal")
+                .active(true)
+                .birthDate(LocalDate.of(1990, 1, 1))
+                .professionalData(professionalData)
+                .build();
+
+        when(findPeople.findOne(personId)).thenReturn(person);
+
+        ValidationResult validationResult = new ValidationResult();
+        validationResult.addError("EMPLOYMENT_START_DATE_INVALID");
+        when(professionalDataValidator.validate(professionalData)).thenReturn(validationResult);
+
+        assertThrows(com.github.thiagomarqs.gerenciamentopessoas.domain.exception.BusinessRuleException.class, () -> {
+            editPerson.edit(personId, edited);
+        });
+    }
+
+    @Test
+    void shouldPartiallyUpdateProfessionalData() {
+        var personId = 1L;
+
+        var existingProfessionalData = ProfessionalData.builder()
+                .id(1L)
+                .companyName("Old Company")
+                .contractType(ContractType.CLT)
+                .employmentStartDate(LocalDate.of(2020, 1, 1))
+                .build();
+
+        var person = Person.builder()
+                .id(personId)
+                .fullName("Fulano de Tal")
+                .active(true)
+                .birthDate(LocalDate.of(1990, 1, 1))
+                .professionalData(existingProfessionalData)
+                .build();
+
+        var partialUpdate = ProfessionalData.builder()
+                .companyName("New Company")
+                .contractType(null)
+                .employmentStartDate(null)
+                .build();
+
+        var edited = Person.builder()
+                .id(personId)
+                .fullName("Fulano de Tal")
+                .active(true)
+                .birthDate(LocalDate.of(1990, 1, 1))
+                .professionalData(partialUpdate)
+                .build();
+
+        when(findPeople.findOne(personId)).thenReturn(person);
+        when(professionalDataValidator.validate(partialUpdate)).thenReturn(new ValidationResult());
+
+        assertEquals("Old Company", person.getProfessionalData().getCompanyName());
+        assertEquals(ContractType.CLT, person.getProfessionalData().getContractType());
+        assertEquals(LocalDate.of(2020, 1, 1), person.getProfessionalData().getEmploymentStartDate());
+
+        editPerson.edit(personId, edited);
+
+        assertEquals("New Company", person.getProfessionalData().getCompanyName());
+        assertEquals(ContractType.CLT, person.getProfessionalData().getContractType());
+        assertEquals(LocalDate.of(2020, 1, 1), person.getProfessionalData().getEmploymentStartDate());
+    }
+
+    @Test
+    void shouldPartiallyUpdateContractTypeOnly() {
+        var personId = 1L;
+
+        var existingProfessionalData = ProfessionalData.builder()
+                .id(1L)
+                .companyName("Old Company")
+                .contractType(ContractType.CLT)
+                .employmentStartDate(LocalDate.of(2020, 1, 1))
+                .build();
+
+        var person = Person.builder()
+                .id(personId)
+                .fullName("Fulano de Tal")
+                .active(true)
+                .birthDate(LocalDate.of(1990, 1, 1))
+                .professionalData(existingProfessionalData)
+                .build();
+
+        var partialUpdate = ProfessionalData.builder()
+                .companyName(null)
+                .contractType(ContractType.PJ)
+                .employmentStartDate(null)
+                .build();
+
+        var edited = Person.builder()
+                .id(personId)
+                .fullName("Fulano de Tal")
+                .active(true)
+                .birthDate(LocalDate.of(1990, 1, 1))
+                .professionalData(partialUpdate)
+                .build();
+
+        when(findPeople.findOne(personId)).thenReturn(person);
+        when(professionalDataValidator.validate(partialUpdate)).thenReturn(new ValidationResult());
+
+        assertEquals(ContractType.CLT, person.getProfessionalData().getContractType());
+
+        editPerson.edit(personId, edited);
+
+        assertEquals("Old Company", person.getProfessionalData().getCompanyName());
+        assertEquals(ContractType.PJ, person.getProfessionalData().getContractType());
+        assertEquals(LocalDate.of(2020, 1, 1), person.getProfessionalData().getEmploymentStartDate());
     }
 
 }

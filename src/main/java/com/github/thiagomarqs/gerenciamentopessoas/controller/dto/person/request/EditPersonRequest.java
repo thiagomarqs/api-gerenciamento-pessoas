@@ -1,5 +1,6 @@
 package com.github.thiagomarqs.gerenciamentopessoas.controller.dto.person.request;
 
+import com.github.thiagomarqs.gerenciamentopessoas.controller.dto.professionaldata.request.UpdateProfessionalDataRequest;
 import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Size;
 
@@ -13,6 +14,8 @@ public record EditPersonRequest(
         @PastOrPresent
         LocalDate birthDate,
 
-        boolean active
+        boolean active,
+
+        UpdateProfessionalDataRequest professionalData
 ) {
 }
