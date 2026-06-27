@@ -15,7 +15,7 @@ O projeto inclui infraestrutura como código com AWS CDK para deploy em ECS Farg
 | Dependência | Versão |
 |---|---|
 | Java | 21 |
-| Gradle | 8.7 |
+| Maven | 3.8.7 |
 | Spring Boot | 3.2.5 |
 | Spring Data JPA | 3.2.5 |
 | Spring HATEOAS | 3.2.5 |
@@ -37,7 +37,7 @@ api-gerenciamento-pessoas/
 ├── cdk_project/                    # Infraestrutura AWS CDK (ECS Fargate, ALB, RDS MySQL)
 │   └── src/main/java/com/myorg/    # Stack e app CDK
 ├── docs/                           # Documentação do projeto (diagramas de domínio)
-├── gradle/wrapper/                 # Gradle Wrapper (distribuição 8.7)
+├── .mvn/                           # Maven Wrapper
 ├── src/
 │   ├── main/
 │   │   ├── java/.../gerenciamentopessoas/
@@ -48,7 +48,7 @@ api-gerenciamento-pessoas/
 │   │   │   └── mapper/             # Mapeamento entre entidades, DTOs e respostas de integração
 │   │   └── resources/              # application.properties e perfis dev/prod
 │   └── test/java/                  # Testes unitários (controllers, casos de uso, validadores, integração ViaCEP)
-├── build.gradle                    # Build e dependências da aplicação Spring Boot
+├── pom.xml                         # Build e dependências da aplicação Spring Boot
 ├── Dockerfile                      # Imagem Docker para deploy (JAR + Temurin 21)
 └── README.md                       # Documentação principal do projeto
 ```
@@ -72,7 +72,7 @@ api-gerenciamento-pessoas/
 ## Running the app
 
 ```bash
-./gradlew bootRun --args='--spring.profiles.active=dev'
+./mvnw spring-boot:run -Dspring-boot.run.profiles=dev
 ```
 
 A aplicação sobe em `http://localhost:8080`.
@@ -87,10 +87,10 @@ Para produção, use o perfil `prod` com variáveis de ambiente de datasource (`
 ## Running unit tests
 
 ```bash
-./gradlew test
+./mvnw test
 ```
 
-Relatório HTML gerado em `build/reports/tests/test/index.html`.
+Relatório HTML gerado em `target/surefire-reports/`.
 
 ---
 
@@ -166,7 +166,7 @@ Relatório HTML gerado em `build/reports/tests/test/index.html`.
   - `{feature-name}` should be a descriptive and concise name summarizing the feature's intent.
   - Example: `feature/setup-testes-integracao`, `feature/mapeamento-campos` or `feature/remocao-token-validation`.
 - Follow existing module and package structure — don't reorganize without asking.
-- Reference the project's `build.gradle` when running Gradle commands to ensure correct configuration is being used.
+- Reference the project's `pom.xml` when running Maven commands to ensure correct configuration is being used.
 
 ## Never
 
@@ -191,7 +191,7 @@ Relatório HTML gerado em `build/reports/tests/test/index.html`.
 
 [ ] Re-read the original request and verify each requirement is addressed — nothing skipped, nothing added beyond scope.
 [ ] New behavior has test coverage.
-[ ] ALL Unit tests passing: `./gradlew test`
+[ ] ALL Unit tests passing: `./mvnw test`
 [ ] Unit test branch coverage of at least 90% in updated classes (run Jacoco and check its coverage report for the classes you updated).
 [ ] No unused imports, dead code, or commented-out code created by you left behind.
-[ ] New dependencies added to `build.gradle` were flagged and approved (see Ask First).
+[ ] New dependencies added to `pom.xml` were flagged and approved (see Ask First).

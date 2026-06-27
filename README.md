@@ -18,8 +18,8 @@ O projeto busca os seguintes objetivos:
 **JSON:** `/v3/api-docs`  
 
 ### Como Executar
-O projeto foi desenvolvido utilizando **Java 21** e **Gradle 8.7**.  
-Para inicializar a aplicação, basta executar o comando `gradle bootRun` na pasta raiz do projeto.  
+O projeto foi desenvolvido utilizando **Java 21** e **Maven**.  
+Para inicializar a aplicação, basta executar o comando `mvn spring-boot:run` na pasta raiz do projeto.  
 A aplicação estará disponível a partir do endpoint base `http://localhost:8080`.
 
 ## AWS
@@ -73,7 +73,7 @@ Classes de configuração, principalmente relacionadas às bibliotecas utilizada
 ## Tecnologias Utilizadas
 * Java
 * Spring Boot
-* Gradle
+* Maven
 * JUnit
 * Mockito
 * Spring Data JPA
