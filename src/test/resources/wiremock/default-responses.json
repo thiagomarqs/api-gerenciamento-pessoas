@@ -1,0 +1,14 @@
+{
+  "mappings": [
+    {
+      "request": {
+        "method": "GET",
+        "url": "/00000-000/json"
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"cep\": \"00000-000\",\n  \"logradouro\": \"Rua Teste\",\n  \"complemento\": \"123\",\n  \"unidade\": \"\",\n  \"bairro\": \"Bairro\",\n  \"localidade\": \"Localidade\",\n  \"uf\": \"UF\",\n  \"estado\": \"Estado\",\n  \"regiao\": \"Regiao\",\n  \"ibge\": \"1231234\",\n  \"gia\": \"0000\",\n  \"ddd\": \"99\",\n  \"siafi\": \"9999\"\n}"
+      }
+    }
+  ]
+}
