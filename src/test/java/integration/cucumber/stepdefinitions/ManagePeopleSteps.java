@@ -1,28 +1,26 @@
 package integration.cucumber.stepdefinitions;
 
-import com.github.thiagomarqs.gerenciamentopessoas.controller.dto.person.request.EditPersonRequest;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.entity.Address;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.entity.Person;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.repository.AddressRepository;
 import com.github.thiagomarqs.gerenciamentopessoas.domain.repository.PersonRepository;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import integration.cucumber.utils.MappingUtils;
+import integration.cucumber.utils.Paths;
 import io.cucumber.java.Before;
 import io.cucumber.java.pt.Dado;
 import io.cucumber.java.pt.Entao;
 import io.cucumber.java.pt.Quando;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 
-import static integration.cucumber.fixture.PersonFixture.activePerson;
-import static integration.cucumber.fixture.PersonFixture.createPersonRequest;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -58,11 +56,14 @@ public class ManagePeopleSteps {
         person = null;
     }
 
-    @Quando("é requisitada a criação de uma pessoa")
-    public void requisitadaACriacaoDeUmaPessoa() throws Exception {
+    @Dado("que uma pessoa é criada via API com payload {string}")
+    @Quando("uma pessoa é criada via API com payload {string}")
+    public void criarPessoa(String requestJsonFileName) throws Exception {
+        String request = Files.readString(Path.of(Paths.PAYLOADS + requestJsonFileName));
+
         resultActions = mockMvc.perform(
                 post("/api/people")
-                        .content(createPersonRequest)
+                        .content(request)
                         .contentType(MediaType.APPLICATION_JSON)
                 );
 
@@ -98,22 +99,9 @@ public class ManagePeopleSteps {
         assertThat(person.isActive()).isTrue();
     }
 
-    @Dado("que uma pessoa está com cadastro ativo")
-    @Transactional
-    public void cadastrarPessoaAtiva() {
-        person = activePerson();
-        personRepository.save(person);
-        personId = person.getId();
-    }
-
-    @Quando("é requisitada a desativação de uma pessoa")
-    public void requisitarDesativacaoDePessoa() throws Exception {
-        Person editedPerson;
-        BeanUtils.copyProperties(person, editedPerson = new Person());
-        editedPerson.setActive(false);
-
-        EditPersonRequest editPersonRequest = MappingUtils.convertPersonToEditPersonRequest(editedPerson);
-        String request = gson.toJson(editPersonRequest);
+    @Quando("é requisitada a desativação de uma pessoa com payload {string}")
+    public void requisitarDesativacaoDePessoa(String requestJsonFileName) throws Exception {
+        String request = Files.readString(Path.of(Paths.PAYLOADS + requestJsonFileName));
 
         mockMvc.perform(
                 patch("/api/people/" + personId)
