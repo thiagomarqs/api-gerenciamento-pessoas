@@ -1,0 +1,19 @@
+{
+  "fullName": "string",
+  "birthDate": "2026-06-28",
+  "addresses": [
+    {
+      "address": "string",
+      "cep": "00000-000",
+      "number": "string",
+      "city": "string",
+      "state": "string",
+      "isMain": true
+    }
+  ],
+  "professionalData": {
+    "companyName": "string",
+    "contractType": "CLT",
+    "employmentStartDate": "2026-06-28"
+  }
+}

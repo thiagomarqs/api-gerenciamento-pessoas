@@ -27,7 +27,6 @@ public interface PersonMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "addresses", ignore = true)
     @Mapping(target = "mainAddress", ignore = true)
-    @Mapping(target = "active", ignore = true)
     @Mapping(target = "professionalData.person", ignore = true)
     Person editPersonRequestToPerson(EditPersonRequest request);
 

@@ -36,7 +36,7 @@ public class ViaCepAddressFinder implements AddressFinder {
     public AddressIntegrationResult findAddressByCep(String cep) {
         var request = buildRequestFromCep(cep);
         var response = getHttpResponse(request).body();
-        var isInvalid = response.contains("\"erro\": true");
+        var isInvalid = response.contains("\"erro\": \"true\"");
 
         if (isInvalid) {
             return AddressIntegrationResult.failure(List.of("Invalid Address"));

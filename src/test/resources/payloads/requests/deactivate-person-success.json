@@ -1,0 +1,10 @@
+{
+  "fullName": "string",
+  "birthDate": "2026-06-28",
+  "active": false,
+  "professionalData": {
+    "companyName": "string",
+    "contractType": "CLT",
+    "employmentStartDate": "2026-06-28"
+  }
+}

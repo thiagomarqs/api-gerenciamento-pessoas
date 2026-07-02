@@ -1,0 +1,15 @@
+{
+  "cep": "00000-000",
+  "logradouro": "Rua Teste",
+  "complemento": "123",
+  "unidade": "",
+  "bairro": "Bairro",
+  "localidade": "Localidade",
+  "uf": "UF",
+  "estado": "Estado",
+  "regiao": "Regiao",
+  "ibge": "1231234",
+  "gia": "0000",
+  "ddd": "99",
+  "siafi": "9999"
+}
